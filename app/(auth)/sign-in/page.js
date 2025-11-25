@@ -109,16 +109,29 @@ export default function SignInPage() {
             </button>
           </div>
         </form>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/sign-up"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Sign up
-            </Link>
-          </p>
+        <div className="text-center space-y-1">
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/sign-up"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Forgot Password?
+              <Link
+                href="/forgot-password"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Click here
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -14,7 +14,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await apiClient.get("/api/user");
+        const response = await apiClient.get("/api/user", {
+          withCredentials: true,
+        });
         setUser(response.data);
       } catch (error) {
         setUser(null);
@@ -77,8 +79,29 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      // Call the logout endpoint provided by Breeze
-      await apiClient.post("/logout");
+      await apiClient.get("/sanctum/csrf-cookie", {
+        withCredentials: true,
+      });
+
+      const xsrfToken = getCookie("XSRF-TOKEN");
+
+      if (!xsrfToken) {
+        throw new Error(
+          "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+        );
+      }
+
+      await apiClient.post(
+        "/logout",
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+            Accept: "application/json",
+          },
+        }
+      );
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
