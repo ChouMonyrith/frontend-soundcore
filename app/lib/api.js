@@ -5,10 +5,8 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
-// Function to get CSRF cookie (needed for Sanctum)
 export const getCsrfCookie = async () => {
   try {
-    // This call sets the CSRF cookie in the browser
     await apiClient.get("/sanctum/csrf-cookie", {
       withCredentials: true,
     });

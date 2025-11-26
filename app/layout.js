@@ -1,7 +1,7 @@
-import "./globals.css";
+import { Roboto } from "next/font/google";
 import { AuthProvider } from "./contexts/AuthContext";
-import { Inter, Roboto } from "next/font/google";
-import Navbar from "./components/Navbar";
+import "./styles/globals.css";
+import { PublicHeader } from "./components/PublicHeader";
 
 export const metadata = {
   title: "Create Next App",
@@ -17,10 +17,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={roboto.className}>
       <body className="min-h-screen bg-gray-100">
-        <AuthProvider>
-          <Navbar />
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

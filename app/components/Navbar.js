@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/app/contexts/AuthContext";
 import LogoImage from "@/public/logo.png";
-import { CircleUser } from "lucide-react";
+import { CircleUser, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -142,7 +142,10 @@ const Navbar = () => {
               </>
             ) : (
               <Link href="/sign-in">
-                <CircleUser className="h-8 w-8 text-gray-700 hover:text-black transition-colors" />
+                <User
+                  className="text-gray-700 hover:text-black transition-colors"
+                  size={24}
+                />
               </Link>
             )}
           </div>
