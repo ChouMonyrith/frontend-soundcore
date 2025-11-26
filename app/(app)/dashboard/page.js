@@ -1,73 +1,110 @@
 "use client";
 
-import React from "react";
+import { RecentSale } from "@/app/components/RecentSale";
+import { StatsOverview } from "@/app/components/StatsOverview";
+import { Activity, Link, Music, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import apiClient, { getCookie } from "@/app/lib/api";
-import { Link } from "lucide-react";
+import { Button } from "@/app/ui/button";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex h-[50vh] items-center justify-center bg-neutral-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-500 border-t-transparent"></div>
+      </div>
+    );
   }
 
   if (!user) {
     return (
-      <div className="p-8">
-        <p>
-          You are not logged in. Please{" "}
-          <Link href="/sign-in" className="text-blue-500 hover:underline">
-            sign in
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
+        <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 max-w-md w-full text-center backdrop-blur-xl">
+          <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-400">
+            <User className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">
+            Access Restricted
+          </h2>
+          <p className="text-neutral-400 mb-6">
+            You need to be logged in to view your dashboard and manage your
+            assets.
+          </p>
+          <Link href="/sign-in">
+            <Button className="w-full bg-violet-600 hover:bg-violet-500 text-white">
+              Sign In
+            </Button>
           </Link>
-          .
-        </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <h2>Welcome, {user.name}!</h2>
-      <p>Email: {user.email}</p>
-      {/* Check if email is verified */}
-      {!user.email_verified_at && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-          <p>Please verify your email address. Check your inbox.</p>
-          {/* Add a button to resend verification email */}
-          <button
-            onClick={async () => {
-              try {
-                await apiClient.get("/sanctum/csrf-cookie", {
-                  withCredentials: true,
-                });
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-6 lg:p-8">
+      {/* Ambient Background Glow */}
+      <div className="fixed top-20 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-                const xsrfToken = getCookie("XSRF-TOKEN");
-
-                await apiClient.post(
-                  "/email/verification-notification",
-                  {},
-                  {
-                    headers: {
-                      Accept: "application/json",
-                      "Content-Type": "application/json",
-                      "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-                    },
-                    withCredentials: true,
-                  }
-                );
-                alert("Verification email resent!");
-              } catch (error) {
-                console.error("Error resending verification:", error);
-                alert("Failed to resend verification email.");
-              }
-            }}
-            className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm"
-          >
-            Resend Verification Email
-          </button>
+      <div className="relative max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+              Welcome back,{" "}
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-blue-400">
+                {user.name}
+              </span>
+            </h1>
+            <p className="text-neutral-400 mt-2 text-lg">
+              Here is what is happening with your sound library today.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="border-white/10 hover:bg-white/5 text-neutral-300"
+            >
+              View Reports
+            </Button>
+            <Button className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20">
+              Upload New Sound
+            </Button>
+          </div>
         </div>
-      )}
+
+        <StatsOverview />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <RecentSale />
+          </div>
+          {/* Added a side widget for completeness */}
+          <div className="bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-white/5 p-6 h-fit">
+            <h3 className="font-semibold text-white mb-4">Quick Actions</h3>
+            <div className="space-y-3">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-neutral-400 hover:text-white hover:bg-white/5"
+              >
+                <Music className="w-4 h-4 mr-2" /> Manage Sounds
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-neutral-400 hover:text-white hover:bg-white/5"
+              >
+                <Activity className="w-4 h-4 mr-2" /> Analytics
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-neutral-400 hover:text-white hover:bg-white/5"
+              >
+                <User className="w-4 h-4 mr-2" /> Customer List
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
