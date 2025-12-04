@@ -17,6 +17,7 @@ export const getCsrfCookie = async () => {
 };
 
 export function getCookie(name) {
+  if (typeof document === "undefined") return null;
   let value = "; " + document.cookie;
   let parts = value.split("; " + name + "=");
   if (parts.length === 2) return parts.pop().split(";").shift();

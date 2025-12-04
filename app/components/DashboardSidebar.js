@@ -1,16 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
+  BarChart3,
+  HelpCircle,
   LayoutDashboard,
   Music2,
-  BarChart3,
-  Wallet,
-  Settings,
   UploadCloud,
-  HelpCircle,
+  Wallet,
+  User,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Mock menu items
 const menuItems = [
@@ -18,7 +18,7 @@ const menuItems = [
   { label: "My Sounds", href: "/dashboard/sounds", icon: Music2 },
   { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { label: "Earnings", href: "/dashboard/earnings", icon: Wallet },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Profile", href: "/dashboard/profile", icon: User },
 ];
 
 export function DashboardSidebar() {
