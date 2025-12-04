@@ -8,13 +8,14 @@ import {
   LayoutDashboard,
   Bell,
 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../components/ui/button";
 import Logo from "./Logo";
-import { Input } from "../ui/input";
-import { Badge } from "../ui/badge";
+import { Input } from "../../components/ui/input";
+import { Badge } from "../../components/ui/badge";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import CartDropdown from "./CartDropdown";
 
 export function PublicHeader({ cartCount = 0 }) {
   const { user, logout } = useAuth();
@@ -65,7 +66,7 @@ export function PublicHeader({ cartCount = 0 }) {
               Home
             </Link>
             <Link
-              href="/category"
+              href="/sounds"
               className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
             >
               Browse
@@ -76,14 +77,18 @@ export function PublicHeader({ cartCount = 0 }) {
           </nav>
 
           <div className="flex items-center gap-4 ml-6">
-            <button className="relative p-2 text-neutral-400 hover:text-white hover:bg-white/5 rounded-full transition-colors">
+            {/* <button className="relative p-2 text-neutral-400 hover:text-white hover:bg-white/5 rounded-full transition-colors">
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
                 <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-violet-600 text-white border-none shadow-lg shadow-violet-500/50">
                   {cartCount}
                 </Badge>
               )}
-            </button>
+            </button> */}
+
+            <div className="flex items-center gap-4 ml-6">
+              <CartDropdown />
+            </div>
 
             {user ? (
               <div className="relative" ref={menuRef}>
@@ -109,7 +114,7 @@ export function PublicHeader({ cartCount = 0 }) {
 
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-3 w-60 bg-neutral-900/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/50 border border-white/10 py-2 animate-in fade-in slide-in-from-top-2 overflow-hidden ring-1 ring-white/5">
-                    <div className="px-5 py-3 border-b border-white/5 bg-white/[0.02]">
+                    <div className="px-5 py-3 border-b border-white/5 bg-white/2">
                       <p className="text-sm font-medium text-white truncate">
                         {user.name}
                       </p>
@@ -129,7 +134,7 @@ export function PublicHeader({ cartCount = 0 }) {
                       </Link>
 
                       <Link
-                        href="/settings"
+                        href="/dashboard/profile"
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
                         onClick={() => setIsUserMenuOpen(false)}
                       >

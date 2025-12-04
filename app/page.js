@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
 import { PublicHeader } from "./components/PublicHeader";
+import Footer from "./components/Footer";
+import { categoriesService } from "@/app/services/categoryService";
 
 // Enhanced data with modern color mappings
 const featuredSounds = [
@@ -66,50 +68,50 @@ const featuredSounds = [
   },
 ];
 
-const categories = [
-  {
-    name: "Bass",
-    count: 234,
-    icon: <Activity />,
-    color: "text-violet-400",
-    bg: "bg-violet-500/10",
-  },
-  {
-    name: "Drums",
-    count: 456,
-    icon: <Disc />,
-    color: "text-blue-400",
-    bg: "bg-blue-500/10",
-  },
-  {
-    name: "FX",
-    count: 189,
-    icon: <Zap />,
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    name: "Synth",
-    count: 312,
-    icon: <Sliders />,
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-  },
-  {
-    name: "Vocal",
-    count: 145,
-    icon: <Mic2 />,
-    color: "text-pink-400",
-    bg: "bg-pink-500/10",
-  },
-  {
-    name: "Instrument",
-    count: 267,
-    icon: <Music2 />,
-    color: "text-indigo-400",
-    bg: "bg-indigo-500/10",
-  },
-];
+// const categories = [
+//   {
+//     name: "Bass",
+//     count: 234,
+//     icon: <Activity />,
+//     color: "text-violet-400",
+//     bg: "bg-violet-500/10",
+//   },
+//   {
+//     name: "Drums",
+//     count: 456,
+//     icon: <Disc />,
+//     color: "text-blue-400",
+//     bg: "bg-blue-500/10",
+//   },
+//   {
+//     name: "FX",
+//     count: 189,
+//     icon: <Zap />,
+//     color: "text-emerald-400",
+//     bg: "bg-emerald-500/10",
+//   },
+//   {
+//     name: "Synth",
+//     count: 312,
+//     icon: <Sliders />,
+//     color: "text-orange-400",
+//     bg: "bg-orange-500/10",
+//   },
+//   {
+//     name: "Vocal",
+//     count: 145,
+//     icon: <Mic2 />,
+//     color: "text-pink-400",
+//     bg: "bg-pink-500/10",
+//   },
+//   {
+//     name: "Instrument",
+//     count: 267,
+//     icon: <Music2 />,
+//     color: "text-indigo-400",
+//     bg: "bg-indigo-500/10",
+//   },
+// ];
 
 const topProducers = [
   { name: "Bass Master", sales: 1234, avatar: "BM" },
@@ -118,7 +120,18 @@ const topProducers = [
   { name: "Atmosphere", sales: 845, avatar: "AT" },
 ];
 
-export default function HomePage() {
+const iconMap = {
+  Activity: Activity,
+  Disc: Disc,
+  Zap: Zap,
+  Music2: Music2,
+  Sliders: Sliders,
+  Mic2: Mic2,
+};
+
+export default async function HomePage() {
+  const categories = await categoriesService.getCategories();
+
   return (
     // Changed to Dark Mode Base
     <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
@@ -268,7 +281,7 @@ export default function HomePage() {
               <div className="group relative bg-neutral-900 border border-white/5 rounded-2xl overflow-hidden hover:border-violet-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10">
                 <div className="relative aspect-square overflow-hidden">
                   <Image
-                    src={sound.image}
+                    src="/placeholder.png"
                     alt={sound.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -329,32 +342,36 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category) => (
-              <Link
-                key={category.name}
-                href={`/categories/${category.name.toLowerCase()}`}
-                className="group"
-              >
-                <div className="h-full bg-neutral-900 border border-white/5 p-6 rounded-2xl hover:bg-neutral-800 hover:border-violet-500/30 transition-all text-center flex flex-col items-center justify-center gap-3 relative overflow-hidden">
-                  <div
-                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${category.bg} blur-xl`}
-                  ></div>
-                  <div
-                    className={`relative w-12 h-12 rounded-xl bg-neutral-800 flex items-center justify-center ${category.color} group-hover:scale-110 transition-transform`}
+            {categories &&
+              categories.map((category) => {
+                const IconComponent = iconMap[category.icon] || Activity;
+                return (
+                  <Link
+                    key={category.name}
+                    href={`/categories/${category.name.toLowerCase()}`}
+                    className="group"
                   >
-                    {category.icon}
-                  </div>
-                  <div className="relative">
-                    <h3 className="font-semibold text-white">
-                      {category.name}
-                    </h3>
-                    <p className="text-xs text-neutral-500 mt-1">
-                      {category.count}+
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                    <div className="h-full bg-neutral-900 border border-white/5 p-6 rounded-2xl hover:bg-neutral-800 hover:border-violet-500/30 transition-all text-center flex flex-col items-center justify-center gap-3 relative overflow-hidden">
+                      <div
+                        className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${category.bg} blur-xl`}
+                      ></div>
+                      <div
+                        className={`relative w-12 h-12 rounded-xl bg-neutral-800 flex items-center justify-center ${category.color} group-hover:scale-110 transition-transform`}
+                      >
+                        <IconComponent />
+                      </div>
+                      <div className="relative">
+                        <h3 className="font-semibold text-white">
+                          {category.name}
+                        </h3>
+                        <p className="text-xs text-neutral-500 mt-1">
+                          {category.count || 0}+
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
           </div>
         </div>
       </section>
@@ -429,6 +446,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

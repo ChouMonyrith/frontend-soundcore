@@ -2,9 +2,10 @@
 
 import { RecentSale } from "@/app/components/RecentSale";
 import { StatsOverview } from "@/app/components/StatsOverview";
-import { Activity, Link, Music, User } from "lucide-react";
+import { Activity, Music, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { Button } from "@/app/ui/button";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -60,7 +61,7 @@ export default function DashboardPage() {
               Here is what is happening with your sound library today.
             </p>
           </div>
-          <div className="flex gap-3">
+          {/* <div className="flex gap-3">
             <Button
               variant="outline"
               className="border-white/10 hover:bg-white/5 text-neutral-300"
@@ -68,9 +69,9 @@ export default function DashboardPage() {
               View Reports
             </Button>
             <Button className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20">
-              Upload New Sound
+              <Link href="/dashboard/upload">Upload New Sound</Link>
             </Button>
-          </div>
+          </div> */}
         </div>
 
         <StatsOverview />

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useEffect } from "react";
-import apiClient, { getCookie, getCsrfCookie } from "@/app/lib/api";
+import { authService } from "@/app/services/authService";
 
 const AuthContext = createContext();
 
@@ -14,9 +14,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await apiClient.get("/api/user", {
-          withCredentials: true,
-        });
+        const response = await authService.getUser();
         setUser(response.data);
       } catch (error) {
         setUser(null);
@@ -31,31 +29,10 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      await getCsrfCookie();
-
-      const xsrfToken = getCookie("XSRF-TOKEN");
-
-      if (!xsrfToken) {
-        throw new Error(
-          "XSRF-TOKEN cookie not found after fetching CSRF cookie."
-        );
-      }
-
-      await apiClient.post(
-        "/login",
-        { email, password },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-          },
-          withCredentials: true,
-        }
-      );
+      await authService.login(email, password);
 
       // Fetch the user profile *after* login to update context state
-      const response = await apiClient.get("/api/user");
+      const response = await authService.getUser();
       setUser(response.data);
 
       // Redirect after successful login
@@ -70,27 +47,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await getCsrfCookie();
-
-      const xsrfToken = getCookie("XSRF-TOKEN");
-
-      if (!xsrfToken) {
-        throw new Error(
-          "XSRF-TOKEN cookie not found after fetching CSRF cookie."
-        );
-      }
-
-      await apiClient.post(
-        "/logout",
-        {},
-        {
-          withCredentials: true,
-          headers: {
-            "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-            Accept: "application/json",
-          },
-        }
-      );
+      await authService.logout();
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -102,31 +59,11 @@ export function AuthProvider({ children }) {
   const register = async (name, email, password, password_confirmation) => {
     setLoading(true);
     try {
-      await getCsrfCookie();
-
-      const xsrfToken = getCookie("XSRF-TOKEN");
-      if (!xsrfToken) {
-        throw new Error(
-          "XSRF-TOKEN cookie not found after fetching CSRF cookie."
-        );
-      }
-
-      const response = await apiClient.post(
-        "/register",
-        {
-          name,
-          email,
-          password,
-          password_confirmation,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-          },
-          withCredentials: true,
-        }
+      const response = await authService.register(
+        name,
+        email,
+        password,
+        password_confirmation
       );
 
       router.push("/sign-in");
@@ -143,31 +80,7 @@ export function AuthProvider({ children }) {
   const forgotPassword = async (email) => {
     setLoading(true);
     try {
-      await apiClient.get("/sanctum/csrf-cookie", {
-        withCredentials: true,
-      });
-
-      const xsrfToken = getCookie("XSRF-TOKEN");
-      if (!xsrfToken) {
-        throw new Error(
-          "XSRF-TOKEN cookie not found after fetching CSRF cookie."
-        );
-      }
-
-      const response = await apiClient.post(
-        "/forgot-password",
-        {
-          email,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await authService.forgotPassword(email);
 
       if (response.status === 200) {
         return response.data;
@@ -195,32 +108,11 @@ export function AuthProvider({ children }) {
   ) => {
     setLoading(true);
     try {
-      await getCsrfCookie();
-
-      const xsrfToken = getCookie("XSRF-TOKEN");
-
-      if (!xsrfToken) {
-        throw new Error(
-          "XSRF-TOKEN cookie not found after fetching CSRF cookie."
-        );
-      }
-
-      const response = await apiClient.post(
-        "/reset-password",
-        {
-          token,
-          email,
-          password,
-          password_confirmation,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-          },
-          withCredentials: true,
-        }
+      const response = await authService.resetPassword(
+        token,
+        email,
+        password,
+        password_confirmation
       );
 
       if (response.status === 200) {
@@ -242,21 +134,8 @@ export function AuthProvider({ children }) {
   };
 
   const verifyEmail = async () => {
-    await getCsrfCookie();
-    const xsrf = getCookie("XSRF-TOKEN");
-
     try {
-      const res = await apiClient.post(
-        "/email/verification-notification",
-        {},
-        {
-          headers: {
-            "X-XSRF-TOKEN": decodeURIComponent(xsrf),
-            Accept: "application/json",
-          },
-        }
-      );
-
+      const res = await authService.verifyEmail();
       return res.data; // Laravel returns { status: "verification-link-sent" }
     } catch (error) {
       console.error("Verify email resend error:", error);
