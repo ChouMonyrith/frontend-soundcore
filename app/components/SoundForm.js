@@ -18,6 +18,7 @@ export default function SoundForm({
   isSubmitting,
   initialValues = {},
   categories = [],
+  isEdit = false,
 }) {
   const [categoryId, setCategoryId] = useState(initialValues.category_id || "");
   const [key, setKey] = useState(initialValues.key || "");
@@ -57,6 +58,7 @@ export default function SoundForm({
             type="file"
             accept="image/*"
             className="bg-neutral-800/50 border-white/10 text-white file:bg-violet-600 file:text-white file:border-0 file:rounded-md file:px-2 file:py-1 file:mr-4 file:text-sm file:font-medium hover:file:bg-violet-500 cursor-pointer"
+            required={!isEdit}
           />
         </div>
 

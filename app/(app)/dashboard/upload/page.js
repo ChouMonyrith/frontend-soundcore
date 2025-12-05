@@ -12,8 +12,6 @@ import { useEffect } from "react";
 
 export default function UploadPage() {
   const [files, setFiles] = useState([]);
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const router = useRouter();

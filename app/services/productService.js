@@ -1,4 +1,5 @@
 import apiClient, { getCookie, getCsrfCookie } from "@/app/lib/api";
+import { authService } from "./authService";
 
 export const productService = {
   async uploadProduct(formData) {
@@ -52,7 +53,7 @@ export const productService = {
     return response.data;
   },
 
-  async updateProduct(slug, formData) {
+  async updateProduct(id, formData) {
     await getCsrfCookie();
     const xsrfToken = getCookie("XSRF-TOKEN");
 
@@ -62,7 +63,63 @@ export const productService = {
       );
     }
 
-    const response = await apiClient.put(`/api/products/${slug}`, formData, {
+    formData.append("_method", "PUT");
+
+    const response = await apiClient.post(`/api/products/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  },
+
+  async getMyProducts(config = {}) {
+    // 1. Fetch User (Handles Server/Client logic internally)
+    const userResponse = await authService.getUser(config);
+    const producerId = userResponse.data.producer_profile?.id;
+
+    if (!producerId) throw new Error("User is not a producer");
+
+    // 2. Prepare headers for the second request
+    let headers = config.headers || {};
+
+    // If Server-Side, we must forward cookies manually again
+    if (typeof window === "undefined") {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      headers = {
+        ...headers,
+        Cookie: cookieStore.toString(),
+        Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      };
+    }
+
+    // 3. Fetch Producer Sounds
+    const response = await apiClient.get(
+      `/api/producers/${producerId}/sounds`,
+      {
+        ...config,
+        headers, // Attach the server headers if needed
+        withCredentials: true, // For client side
+      }
+    );
+    return response.data.data;
+  },
+
+  async deleteProduct(id) {
+    await getCsrfCookie();
+    const xsrfToken = getCookie("XSRF-TOKEN");
+
+    if (!xsrfToken) {
+      throw new Error(
+        "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+      );
+    }
+
+    const response = await apiClient.delete(`/api/products/${id}`, {
       headers: {
         "Content-Type": "multipart/form-data",
         "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),

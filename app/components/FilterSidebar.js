@@ -45,7 +45,7 @@ export function FilterSidebar() {
   const [priceRange, setPriceRange] = useState([0, 50]);
 
   return (
-    <aside className="w-72 border-r border-white/5 bg-neutral-900/20 hidden lg:flex flex-col h-full sticky top-0">
+    <aside className="w-72 border-r  border-white/5 bg-neutral-900/20 hidden lg:flex flex-col h-full sticky top-0">
       <div className="p-6">
         {/* Categories */}
         <div className="mb-8">

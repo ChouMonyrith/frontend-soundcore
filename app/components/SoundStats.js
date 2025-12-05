@@ -1,9 +1,56 @@
+"use client";
 import { Card } from "@/components/ui/card";
 import { HardDrive, Download, Music, Activity } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function SoundStats({ sounds }) {
   const activeCount = sounds.filter((s) => s.status === "active").length;
-  const totalDownloads = sounds.reduce((acc, s) => acc + s.downloads, 0);
+  const totalDownloads = sounds.reduce((acc, s) => acc + s.download_count, 0);
+  const [size, setSize] = useState("Calculating...");
+
+  useEffect(() => {
+    const calculateTotalSize = async () => {
+      if (!sounds || sounds.length === 0) {
+        setSize("0 MB");
+        return;
+      }
+
+      try {
+        const sizePromises = sounds.map(async (sound) => {
+          if (!sound.file_path) return 0;
+          try {
+            const proxyUrl = `/api/audio?url=${encodeURIComponent(
+              sound.file_path
+            )}`;
+            const response = await fetch(proxyUrl, { method: "HEAD" });
+            if (response.ok) {
+              const sizeBytes = response.headers.get("content-length");
+              return sizeBytes ? parseInt(sizeBytes, 10) : 0;
+            }
+          } catch (error) {
+            console.error(`Error fetching size for ${sound.name}:`, error);
+            return 0;
+          }
+          return 0;
+        });
+
+        const sizes = await Promise.all(sizePromises);
+        const totalBytes = sizes.reduce((acc, curr) => acc + curr, 0);
+        const mb = totalBytes / (1024 * 1024);
+
+        if (mb > 1024) {
+          setSize(`${(mb / 1024).toFixed(2)} GB`);
+        } else {
+          setSize(`${mb.toFixed(2)} MB`);
+        }
+      } catch (error) {
+        console.error("Error calculating total size:", error);
+        setSize("Error");
+      }
+    };
+
+    calculateTotalSize();
+  }, [sounds]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -28,7 +75,7 @@ export function SoundStats({ sounds }) {
         },
         {
           label: "Total Size",
-          value: "48.1 MB",
+          value: size,
           icon: HardDrive,
           color: "text-orange-400",
         },
@@ -40,11 +87,13 @@ export function SoundStats({ sounds }) {
           <div className={`p-3 rounded-xl bg-white/5 ${stat.color}`}>
             <stat.icon className="w-5 h-5" />
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="text-neutral-500 text-xs font-medium uppercase">
               {stat.label}
             </div>
-            <div className="text-xl font-bold text-white">{stat.value}</div>
+            <div className="text-xl font-bold flex items-center justify-center text-white">
+              {stat.value}
+            </div>
           </div>
         </Card>
       ))}
