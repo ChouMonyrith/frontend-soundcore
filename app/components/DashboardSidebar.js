@@ -12,17 +12,32 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Mock menu items
-const menuItems = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "My Sounds", href: "/dashboard/sounds", icon: Music2 },
-  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { label: "Earnings", href: "/dashboard/earnings", icon: Wallet },
-  { label: "Profile", href: "/dashboard/profile", icon: User },
-];
+import { useAuth } from "@/app/contexts/AuthContext";
+
+// ... (existing imports)
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  const isAdmin = user?.roles?.some((role) => role.name === "admin");
+
+  const menuItems = [
+    { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+    { label: "My Sounds", href: "/dashboard/sounds", icon: Music2 },
+    { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+    { label: "Earnings", href: "/dashboard/earnings", icon: Wallet },
+    { label: "Profile", href: "/dashboard/profile", icon: User },
+    ...(isAdmin
+      ? [
+          {
+            label: "Producer Requests",
+            href: "/dashboard/admin/requests",
+            icon: HelpCircle,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <aside className="w-64 bg-neutral-950 border-r border-white/5 flex flex-col h-screen sticky top-0">
@@ -35,6 +50,7 @@ export function DashboardSidebar() {
           </div>
           <ul className="space-y-1">
             {menuItems.map((item) => {
+              // ...
               const Icon = item.icon;
               // Simple active check: strictly equal or starts with (for nested routes)
               const isActive =

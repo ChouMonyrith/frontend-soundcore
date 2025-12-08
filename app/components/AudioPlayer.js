@@ -119,7 +119,7 @@ export default function AudioPlayer({
         </h3>
 
         <div className="flex items-center gap-3 bg-black/20 rounded-full px-3 py-1.5 border border-white/5">
-          <Volume2 className="w-4 h-4 text-neutral-400" />
+          <Volume2 className="w-4 h-4 text-white" />
           <Slider
             value={volume}
             onValueChange={setVolume}

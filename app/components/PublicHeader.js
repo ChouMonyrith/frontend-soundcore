@@ -7,6 +7,7 @@ import {
   LogOut,
   LayoutDashboard,
   Bell,
+  Download,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import Logo from "./Logo";
@@ -22,7 +23,12 @@ export function PublicHeader({ cartCount = 0 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close menu when clicking outside
+  const hasRole = (roleName) => {
+    return user?.roles?.some((role) => role.name == roleName) || false;
+  };
+
+  const isAdminOrProducer = hasRole("producer") || hasRole("admin");
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -39,6 +45,8 @@ export function PublicHeader({ cartCount = 0 }) {
     await logout();
     setIsUserMenuOpen(false);
   };
+
+  console.log(user);
 
   return (
     <header className="bg-neutral-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-50 transition-all duration-300">
@@ -123,26 +131,36 @@ export function PublicHeader({ cartCount = 0 }) {
                       </p>
                     </div>
 
-                    <div className="p-1">
+                    {isAdminOrProducer ? (
+                      <div className="p-1">
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <LayoutDashboard className="w-4 h-4 text-violet-400" />
+                          Dashboard
+                        </Link>
+
+                        <Link
+                          href="/dashboard/profile"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <User className="w-4 h-4 text-neutral-500" />
+                          Profile
+                        </Link>
+                      </div>
+                    ) : (
                       <Link
-                        href="/dashboard"
+                        href="/my-downloads"
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        <LayoutDashboard className="w-4 h-4 text-violet-400" />
-                        Dashboard
+                        <Download className="w-4 h-4 text-emerald-400" />
+                        My Downloads
                       </Link>
-
-                      <Link
-                        href="/dashboard/profile"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <User className="w-4 h-4 text-neutral-500" />
-                        Profile
-                      </Link>
-                    </div>
-
+                    )}
                     <div className="p-1 border-t border-white/5 mt-1">
                       <button
                         onClick={handleLogout}

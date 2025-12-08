@@ -14,14 +14,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
-// Mock Data for Links
 const footerLinks = {
   marketplace: [
     { label: "Browse Sounds", href: "/browse" },
     { label: "Top Charts", href: "/charts" },
     { label: "New Arrivals", href: "/new" },
     { label: "Free Sounds", href: "/free" },
-    { label: "Featured Artists", href: "/artists" },
+    {
+      label: "Become a Producer",
+      href: "/producer/request",
+    },
   ],
   company: [
     { label: "About Us", href: "/about" },

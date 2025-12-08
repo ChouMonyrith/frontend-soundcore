@@ -132,6 +132,8 @@ const iconMap = {
 export default async function HomePage() {
   const categories = await categoriesService.getCategories();
 
+  console.log(categories);
+
   return (
     // Changed to Dark Mode Base
     <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
@@ -365,7 +367,7 @@ export default async function HomePage() {
                           {category.name}
                         </h3>
                         <p className="text-xs text-neutral-500 mt-1">
-                          {category.count || 0}+
+                          {category.products?.length || 0}+
                         </p>
                       </div>
                     </div>
