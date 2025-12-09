@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useCart } from "@/app/contexts/CartContext";
 import {
   ShoppingCart,
   Check,
@@ -8,19 +9,48 @@ import {
   Share2,
   FileAudio,
   Play,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import Link from "next/link";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export function PricingCard({ sound }) {
+  const { addToCart } = useCart();
+  const { user } = useAuth();
+  const router = useRouter();
   const [addedToCart, setAddedToCart] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+  // Default to standard license for now
+  const licenseType = "standard";
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      // Redirect to login if not authenticated
+      router.push("/sign-in");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await addToCart(sound.id, licenseType, 1);
+      if (result.success) {
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+      } else {
+        console.error(result.error);
+      }
+    } catch (e) {
+      console.error("Add to cart error", e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,14 +72,16 @@ export function PricingCard({ sound }) {
         <Button
           size="lg"
           onClick={handleAddToCart}
-          disabled={addedToCart}
+          disabled={addedToCart || loading}
           className={`w-full h-12 text-base font-semibold transition-all duration-300 ${
             addedToCart
               ? "bg-emerald-600 hover:bg-emerald-500 text-white"
               : "bg-white text-black hover:bg-neutral-200"
           }`}
         >
-          {addedToCart ? (
+          {loading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : addedToCart ? (
             <>
               <Check className="w-5 h-5 mr-2" /> Added
             </>
@@ -59,13 +91,15 @@ export function PricingCard({ sound }) {
             </>
           )}
         </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          className="w-full h-12 bg-transparent border-white/10 text-white hover:bg-white/5"
-        >
-          Buy Now
-        </Button>
+        <Link href="/checkout">
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full h-12 bg-transparent border-white/10 text-white hover:bg-white/5 mt-3"
+          >
+            Buy Now
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -108,16 +142,17 @@ export function PricingCard({ sound }) {
 }
 
 export function ArtistProfile({ artist, avatar }) {
+  if (!artist) return null; // Safety check
   return (
     <div className="bg-neutral-900/30 border border-white/5 rounded-3xl p-6">
       <div className="flex items-center gap-4 mb-4">
         <Avatar className="w-14 h-14 border-2 border-neutral-800">
           <AvatarFallback className="bg-linear-to-br from-violet-600 to-indigo-600 text-white">
-            {avatar}
+            {avatar || "A"}
           </AvatarFallback>
         </Avatar>
         <div>
-          <div className="text-white font-bold">{artist.name}</div>
+          <div className="text-white font-bold">{artist.name || artist}</div>
           <div className="text-neutral-500 text-xs">
             234 sounds • 4.9 Rating
           </div>
@@ -134,6 +169,7 @@ export function ArtistProfile({ artist, avatar }) {
 }
 
 export function RelatedSounds({ sounds }) {
+  if (!sounds) return null;
   return (
     <div>
       <h3 className="text-white font-semibold mb-4 pl-1">Similar Sounds</h3>
@@ -144,7 +180,9 @@ export function RelatedSounds({ sounds }) {
             className="group flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5"
           >
             <div
-              className={`w-12 h-12 rounded-lg ${sound.image} flex items-center justify-center shrink-0`}
+              className={`w-12 h-12 rounded-lg ${
+                sound.image || "bg-neutral-800"
+              } flex items-center justify-center shrink-0`}
             >
               <Play className="w-4 h-4 text-white fill-current opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>

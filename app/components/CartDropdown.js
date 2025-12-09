@@ -2,71 +2,38 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ShoppingCart,
-  Trash2,
-  X,
-  ArrowRight,
-  ShoppingBag,
-  Plus,
-  Minus,
-} from "lucide-react";
+import { useCart } from "@/app/contexts/CartContext";
+import { ShoppingCart, Trash2, X, ShoppingBag, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-// Mock Data
-const initialCart = [
-  {
-    id: 1,
-    name: "Deep Bass Drop",
-    artist: "Bass Master",
-    price: 9.99,
-    image: "bg-violet-600",
-    format: "WAV",
-  },
-  {
-    id: 2,
-    name: "Cinematic Riser",
-    artist: "Epic Sounds",
-    price: 14.99,
-    image: "bg-blue-600",
-    format: "WAV",
-  },
-  {
-    id: 3,
-    name: "Analog Drums",
-    artist: "Rhythm Pro",
-    price: 19.99,
-    image: "bg-emerald-600",
-    format: "MP3",
-  },
-];
+import Image from "next/image";
 
 export default function CartDropdown() {
-  const [items, setItems] = useState(initialCart);
+  const { cart, removeFromCart, isLoading, itemCount } = useCart();
   const [isOpen, setIsOpen] = useState(false);
 
-  const subtotal = items.reduce((acc, item) => acc + item.price, 0);
-
-  const removeItem = (id) => {
-    setItems(items.filter((item) => item.id !== id));
-  };
+  // Calculate subtotal from real cart data
+  const subtotal = cart.data.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+  const items = cart.data;
+  console.log(items);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button className="relative p-2 text-neutral-400 hover:text-white hover:bg-white/5 rounded-full transition-colors group">
           <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          {items.length > 0 && (
+          {itemCount > 0 && (
             <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-violet-600 text-white border-none shadow-lg shadow-violet-500/50 animate-in zoom-in">
-              {items.length}
+              {itemCount}
             </Badge>
           )}
         </button>
@@ -81,7 +48,7 @@ export default function CartDropdown() {
         <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/2">
           <h4 className="font-semibold text-white flex items-center gap-2">
             <ShoppingBag className="w-4 h-4 text-violet-400" />
-            Your Cart ({items.length})
+            Your Cart ({itemCount})
           </h4>
           <button
             onClick={() => setIsOpen(false)}
@@ -92,7 +59,11 @@ export default function CartDropdown() {
         </div>
 
         {/* Cart Items List */}
-        {items.length > 0 ? (
+        {isLoading ? (
+          <div className="h-40 flex items-center justify-center">
+            <Loader2 className="animate-spin text-violet-500" />
+          </div>
+        ) : items.length > 0 ? (
           <>
             <ScrollArea className="h-[320px] p-4">
               <div className="space-y-4">
@@ -102,28 +73,44 @@ export default function CartDropdown() {
                     className="group flex gap-3 animate-in fade-in slide-in-from-right-4 duration-300"
                   >
                     {/* Tiny Image */}
-                    <div
-                      className={`w-16 h-16 rounded-lg ${item.image} shrink-0 flex items-center justify-center relative overflow-hidden`}
-                    >
-                      <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="w-16 h-16 rounded-lg bg-neutral-800 shrink-0 flex items-center justify-center relative overflow-hidden">
+                      {item.product?.image_path ? (
+                        // If we had image path we would use it, for now using conditional placeholder
+                        <div className="text-xs text-neutral-500">
+                          <Image
+                            src={item.product.image_path}
+                            alt={item.product.name}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-linear-to-br from-violet-500/20 to-blue-500/20" />
+                      )}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <div>
                         <h5 className="font-medium text-sm text-white truncate">
-                          {item.name}
+                          {item.product?.name || "Unknown Product"}
                         </h5>
                         <p className="text-xs text-neutral-400 truncate">
-                          {item.artist}
+                          {item.license_type} License
                         </p>
                       </div>
                       <div className="flex items-center justify-between mt-1">
                         <div className="text-sm font-bold text-violet-300">
-                          ${item.price}
+                          ${item.price}{" "}
+                          <span className="text-xs font-normal text-neutral-500">
+                            {" "}
+                            x {item.quantity}
+                          </span>
                         </div>
                         <button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeFromCart(item.id)}
                           className="text-neutral-600 hover:text-red-400 transition-colors p-1 mr-2"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

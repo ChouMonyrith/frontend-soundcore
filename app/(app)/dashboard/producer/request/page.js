@@ -14,7 +14,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 
 export default function ProducerRequestPage() {
   const [formData, setFormData] = useState({
@@ -97,6 +97,12 @@ export default function ProducerRequestPage() {
           </form>
         </CardContent>
       </Card>
+      <Toaster
+        position="bottom-right"
+        duration={5000}
+        richColors
+        className="text-white bg-neutral-950 border-neutral-800 shadow-lg"
+      />
     </div>
   );
 }

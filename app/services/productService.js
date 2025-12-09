@@ -109,6 +109,26 @@ export const productService = {
     return response.data.data;
   },
 
+  async getDownloads() {
+    await getCsrfCookie();
+    const xsrfToken = getCookie("XSRF-TOKEN");
+
+    if (!xsrfToken) {
+      throw new Error(
+        "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+      );
+    }
+
+    const response = await apiClient.get("/api/my-downloads", {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  },
+
   async deleteProduct(id) {
     await getCsrfCookie();
     const xsrfToken = getCookie("XSRF-TOKEN");

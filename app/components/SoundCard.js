@@ -11,6 +11,7 @@ import {
   Download,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link"; // Import Link
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,6 +20,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "../contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { useCart } from "../contexts/CartContext";
+import { useState } from "react";
 
 export function SoundCard({
   sound,
@@ -27,10 +32,74 @@ export function SoundCard({
   onDelete,
   onAddToCart,
 }) {
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+  const router = useRouter();
   const isDashboard = variant === "dashboard";
+  const detailUrl = `/sounds/${sound.slug || sound.id}`; // Construct URL
+  const licenseType = "standard";
+
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [isAddedToFav, setIsAddedToFav] = useState(false);
+
+  // Helper to prevent the card link from firing when clicking buttons
+  const stopProp = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    try {
+      const result = await addToCart(sound.id, licenseType, 1);
+      if (result.success) {
+        setIsAddedToCart(true);
+      } else {
+        console.log(result.error);
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
+  const handleAddToFav = async () => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    setIsAddedToFav(() => !isAddedToFav);
+
+    // setIsLoading(true);
+    // try {
+    //   const result = await addToCart(sound.id, licenseType, 1);
+    //   if (result.success) {
+    //     setIsAddedToFav(true);
+    //   } else {
+    //     console.log(result.error);
+    //   }
+    // } catch (error) {
+    //   console.error("Error adding to cart:", error);
+    // } finally {
+    //   setIsLoading(false);
+    // }
+  };
 
   return (
     <div className="group relative bg-neutral-900 border border-white/5 rounded-2xl overflow-hidden hover:border-violet-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-900/10 h-full flex flex-col">
+      {/* 1. The Overlay Link (SEO Friendly, covers the card) */}
+      {!isDashboard && (
+        <Link
+          href={detailUrl}
+          className="absolute inset-0 z-0"
+          aria-label={`View ${sound.name}`}
+        />
+      )}
+
       {/* --- Image Area --- */}
       <div className="relative h-48 w-full bg-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
         {sound.image_path ? (
@@ -47,13 +116,15 @@ export function SoundCard({
           </div>
         )}
 
-        {/* Play Button (Common) */}
-        <button className="relative z-20 w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 hover:bg-white hover:text-black shadow-xl">
+        {/* Play Button - Z-10 to sit above Link */}
+        <button
+          onClick={stopProp} // Stop link click
+          className="relative z-10 w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 hover:bg-white hover:text-black shadow-xl"
+        >
           <Play className="w-6 h-6 ml-1 fill-current" />
         </button>
 
-        {/* Top Right Badge: Category (Browse) OR Status (Dashboard) */}
-        <div className="absolute top-3 right-3 z-20 flex gap-2">
+        <div className="absolute top-3 right-3 z-10 flex gap-2 pointer-events-none">
           {isDashboard && (
             <Badge
               className={
@@ -72,14 +143,15 @@ export function SoundCard({
       </div>
 
       {/* --- Details Area --- */}
-      <div className="p-5 flex flex-col flex-1">
+      <div className="p-5 flex flex-col flex-1 relative z-10 pointer-events-none">
+        {/* pointer-events-none on container, auto on children to let clicks pass through to Link underneath empty spaces */}
+
         <div className="flex justify-between items-start mb-1">
           <div className="min-w-0 flex-1">
             <h3 className="font-bold text-white text-lg truncate pr-2 group-hover:text-violet-400 transition-colors">
               {sound.name}
             </h3>
 
-            {/* Show Artist only in Browse Mode */}
             {!isDashboard && (
               <p className="text-sm text-neutral-400 truncate">
                 {typeof sound.artist === "object"
@@ -88,7 +160,6 @@ export function SoundCard({
               </p>
             )}
 
-            {/* Show Downloads count in Dashboard Mode */}
             {isDashboard && (
               <p className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
                 <Download className="w-3 h-3" /> {sound.download_count || 0}{" "}
@@ -97,37 +168,46 @@ export function SoundCard({
             )}
           </div>
 
-          {/* Action: Like (Browse) vs Menu (Dashboard) */}
-          {!isDashboard ? (
-            <button className="text-neutral-500 hover:text-red-500 transition-colors">
-              <Heart className="w-5 h-5" />
-            </button>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="text-neutral-500 hover:text-white transition-colors">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-neutral-900 border-white/10 text-neutral-200"
+          {/* Action Buttons */}
+          <div className="pointer-events-auto" onClick={stopProp}>
+            {!isDashboard ? (
+              <button
+                className="text-neutral-500 hover:text-red-500 transition-colors cursor-pointer"
+                onClick={handleAddToFav}
               >
-                <DropdownMenuItem onClick={() => onEdit(sound)}>
-                  Edit Details
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-red-400 focus:text-red-400"
-                  onClick={() => onDelete(sound.id)}
+                {isAddedToFav ? (
+                  <Heart className="w-5 h-5 " fill="red" stroke="red" />
+                ) : (
+                  <Heart className="w-5 h-5" />
+                )}
+              </button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="text-neutral-500 hover:text-white transition-colors">
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-neutral-900 border-white/10 text-neutral-200"
                 >
-                  Delete Sound
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+                  <DropdownMenuItem onClick={() => onEdit(sound)}>
+                    <Edit className="w-4 h-4 mr-2" /> Edit Details
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-red-400 focus:text-red-400"
+                    onClick={() => onDelete(sound.id)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Delete Sound
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
 
-        {/* Tags / BPM / Key */}
+        {/* Tags */}
         <div className="flex flex-wrap gap-2 text-xs text-neutral-500 font-medium mb-4 mt-3">
           <span className="bg-neutral-800 px-2 py-1 rounded-md border border-white/5">
             {sound.bpm} BPM
@@ -135,12 +215,11 @@ export function SoundCard({
           <span className="bg-neutral-800 px-2 py-1 rounded-md border border-white/5">
             {sound.key}
           </span>
-          {/* Helper to handle tag formats safely */}
           {(Array.isArray(sound.tags)
             ? sound.tags
             : (sound.tags || "").split(",").filter(Boolean)
           )
-            .slice(0, 2) // Limit to 2 tags to prevent overflow
+            .slice(0, 2)
             .map((tag, i) => (
               <span
                 key={i}
@@ -151,25 +230,32 @@ export function SoundCard({
             ))}
         </div>
 
-        {/* Footer Actions (Pushed to bottom) */}
-        <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-3">
+        {/* Footer Actions */}
+        <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-3 pointer-events-auto">
           <div className="text-xl font-bold text-white">${sound.price}</div>
 
-          {/* Buttons Switcher */}
           {!isDashboard ? (
             <Button
               size="sm"
-              onClick={() => onAddToCart && onAddToCart(sound)}
-              className="bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-transform active:scale-95 ml-auto"
+              onClick={(e) => {
+                stopProp(e);
+                handleAddToCart();
+              }}
+              disabled={isAddedToCart}
+              className="bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-transform active:scale-95 ml-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ShoppingCart className="w-4 h-4 mr-2" /> Add
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              {isAddedToCart ? "Added" : "Add"}
             </Button>
           ) : (
             <div className="flex gap-2">
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => onEdit(sound)}
+                onClick={(e) => {
+                  stopProp(e);
+                  onEdit(sound);
+                }}
                 className="h-9 w-9 text-neutral-400 hover:text-white hover:bg-white/10"
               >
                 <Edit className="w-4 h-4" />
@@ -177,7 +263,10 @@ export function SoundCard({
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => onDelete(sound.id)}
+                onClick={(e) => {
+                  stopProp(e);
+                  onDelete(sound.id);
+                }}
                 className="h-9 w-9 text-neutral-400 hover:text-red-400 hover:bg-red-500/10"
               >
                 <Trash2 className="w-4 h-4" />

@@ -44,9 +44,7 @@ export default async function SoundsPage({ searchParams }) {
         {viewMode === "grid" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
             {soundsData.map((sound) => (
-              <Link href={`/sounds/${sound.slug}`} key={sound.id}>
-                <SoundCard sound={sound} />
-              </Link>
+              <SoundCard key={sound.id} sound={sound} />
             ))}
           </div>
         ) : (

@@ -1,5 +1,6 @@
 import { Roboto } from "next/font/google";
 import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 import "./styles/globals.css";
 import { PublicHeader } from "./components/PublicHeader";
 
@@ -17,7 +18,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={roboto.className}>
       <body className="min-h-screen bg-gray-100">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
