@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { productService } from "@/app/services/productService";
+import { getDownloads } from "@/app/services/productService";
 import { PublicHeader } from "@/app/components/PublicHeader";
 import { DownloadItem } from "@/app/components/DownloadItem";
 
@@ -28,7 +28,7 @@ export default function MyDownloadsPage() {
   useEffect(() => {
     const fetchDownloads = async () => {
       try {
-        const response = await productService.getDownloads();
+        const response = await getDownloads();
         setDownloads(response.data || []);
       } catch (error) {
         console.error("Failed to fetch downloads:", error);

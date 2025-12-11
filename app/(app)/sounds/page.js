@@ -1,4 +1,4 @@
-import { productService } from "@/app/services/productService";
+import { getProducts } from "@/app/services/productService";
 import { SoundCard } from "@/app/components/SoundCard";
 import { SoundRow } from "@/app/components/SoundRow";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export default async function SoundsPage({ searchParams }) {
     limit: params?.limit || 12,
   };
 
-  const soundsData = await productService.getProducts(filters);
+  const soundsData = await getProducts(filters);
   const viewMode = params?.view || "grid";
 
   return (

@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import AudioPlayer from "@/app/components/AudioPlayer";
 import {
   ArtistProfile,
@@ -6,36 +7,10 @@ import {
 } from "@/app/components/SidebarComponents";
 import SoundHero from "@/app/components/SoundHero";
 import SoundTabs from "@/app/components/SoundTabs";
-import { productService } from "@/app/services/productService";
+import { getProductBySlug } from "@/app/services/productService";
+import SoundDetailClient from "./SoundDetailClient";
 
-// --- Mock Data (Moved outside component or to a separate data file) ---
-// const soundData = {
-//   id: 1,
-//   name: "Deep Bass Drop",
-//   artist: "Bass Master",
-//   artistAvatar: "BM",
-//   category: "Bass",
-//   price: 9.99,
-//   rating: 4.8,
-//   reviews: 124,
-//   downloads: 567,
-//   bpm: 140,
-//   key: "Am",
-//   duration: "0:03",
-//   format: "WAV, MP3",
-//   bitrate: "24-bit",
-//   sampleRate: "44.1 kHz",
-//   size: "2.4 MB",
-//   tags: ["bass", "drop", "heavy", "trap", "electronic"],
-//   description:
-//     "A powerful and deep bass drop perfect for trap, dubstep, and electronic music. This professionally crafted sample adds instant impact to your productions...",
-//   image:
-//     "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=1200&q=80",
-//   waveform: Array.from({ length: 60 }, () => Math.random() * 100),
-//   license: "Royalty-free",
-//   releaseDate: "Nov 15, 2024",
-// };
-
+// Mock related sounds for now, or fetch them too if available
 const relatedSounds = [
   {
     id: 2,
@@ -71,36 +46,12 @@ const relatedSounds = [
   },
 ];
 
-const reviews = [
-  {
-    id: 1,
-    user: "John Producer",
-    avatar: "JP",
-    rating: 5,
-    date: "2 days ago",
-    comment: "Amazing bass drop! Used it in my latest track...",
-  },
-  {
-    id: 2,
-    user: "Sarah Beats",
-    avatar: "SB",
-    rating: 5,
-    date: "1 week ago",
-    comment: "Perfect for trap production...",
-  },
-];
-
-import { notFound } from "next/navigation";
-import SoundDetailClient from "./SoundDetailClient";
-
-// ... (imports)
-
 export default async function SoundDetailPage({ params }) {
   const { slug } = await params;
   let soundData;
 
   try {
-    soundData = await productService.getProductBySlug(slug);
+    soundData = await getProductBySlug(slug);
   } catch (error) {
     console.error("Error fetching product:", error);
     if (error.response && error.response.status === 404) {
@@ -113,7 +64,7 @@ export default async function SoundDetailPage({ params }) {
     <SoundDetailClient
       soundData={soundData}
       relatedSounds={relatedSounds}
-      reviews={reviews}
+      reviews={soundData.reviews || []}
     />
   );
 }

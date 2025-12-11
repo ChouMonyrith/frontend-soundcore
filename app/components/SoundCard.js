@@ -9,6 +9,7 @@ import {
   Trash2,
   MoreVertical,
   Download,
+  Star,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link"; // Import Link
@@ -89,6 +90,8 @@ export function SoundCard({
     // }
   };
 
+  console.log(sound);
+
   return (
     <div className="group relative bg-neutral-900 border border-white/5 rounded-2xl overflow-hidden hover:border-violet-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-900/10 h-full flex flex-col">
       {/* 1. The Overlay Link (SEO Friendly, covers the card) */}
@@ -159,13 +162,6 @@ export function SoundCard({
                   : sound.artist}
               </p>
             )}
-
-            {isDashboard && (
-              <p className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
-                <Download className="w-3 h-3" /> {sound.download_count || 0}{" "}
-                Downloads
-              </p>
-            )}
           </div>
 
           {/* Action Buttons */}
@@ -232,7 +228,29 @@ export function SoundCard({
 
         {/* Footer Actions */}
         <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-3 pointer-events-auto">
-          <div className="text-xl font-bold text-white">${sound.price}</div>
+          <div className="flex flex-col gap-1 ">
+            <div className="text-xl font-bold text-white">${sound.price}</div>
+
+            <div className="flex items-center gap-1">
+              <p className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
+                <Download className="w-3 h-3" /> {sound.download_count || 0} Dls
+              </p>
+              {sound.rating > 0 && (
+                <div className="flex items-center text-yellow-500">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-3 h-3 ${
+                        i < sound.rating
+                          ? "fill-current"
+                          : "text-neutral-800 stroke-current"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
           {!isDashboard ? (
             <Button

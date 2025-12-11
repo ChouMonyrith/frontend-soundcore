@@ -1,6 +1,6 @@
 "use client";
 
-import { productService } from "@/app/services/productService";
+import { getProducts } from "@/app/services/productService";
 import { createContext, useContext, useState, useEffect } from "react";
 
 const SoundContext = createContext();
@@ -17,7 +17,7 @@ export function SoundProvider({
   useEffect(() => {
     const fetchSounds = async () => {
       try {
-        const sounds = await productService.getProducts();
+        const sounds = await getProducts();
         setSoundsData(sounds);
       } catch (error) {
         console.error("Error fetching sounds:", error);

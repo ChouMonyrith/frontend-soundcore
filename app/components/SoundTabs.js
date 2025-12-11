@@ -1,6 +1,12 @@
+"use client";
+
 import { ShieldCheck, Zap, FileAudio, Layers, Clock, Star } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { createReview } from "@/app/services/productService";
 
 export default function SoundTabs({ sound, reviews }) {
   return (
@@ -104,48 +110,155 @@ export default function SoundTabs({ sound, reviews }) {
             value="reviews"
             className="mt-0 space-y-6 animate-in fade-in duration-300"
           >
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="border-b border-white/5 last:border-0 pb-6 last:pb-0"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback className="bg-neutral-800 text-neutral-400 text-xs">
-                        {review.avatar}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="text-white font-medium text-sm">
-                        {review.user}
-                      </div>
-                      <div className="text-neutral-500 text-xs">
-                        {review.date}
+            {sound.has_purchased && (
+              <ReviewForm
+                soundId={sound.id}
+                onReviewSubmitted={(newReview) => {
+                  // Ideally we should update the reviews list here.
+                  // For now let's just reload or let the parent handle it?
+                  // The prop `reviews` comes from parent.
+                  // We might need to refresh the page or update state in parent.
+                  // Let's reload for simplicity or just trigger a callback if we had one.
+                  window.location.reload();
+                }}
+              />
+            )}
+
+            {reviews.length === 0 ? (
+              <div className="text-neutral-400 text-center py-10">
+                No reviews yet.
+              </div>
+            ) : (
+              reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="border-b border-white/5 last:border-0 pb-6 last:pb-0"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback className="bg-neutral-800 text-neutral-400 text-xs">
+                          {review.user.avatar ||
+                            review.user.name?.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="text-white font-medium text-sm">
+                          {review.user.name}
+                        </div>
+                        <div className="text-neutral-500 text-xs">
+                          {review.created_at}
+                        </div>
                       </div>
                     </div>
+                    <div className="flex text-yellow-500">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-3 h-3 ${
+                            i < review.rating
+                              ? "fill-current"
+                              : "text-neutral-800"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex text-yellow-500">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3 h-3 ${
-                          i < review.rating
-                            ? "fill-current"
-                            : "text-neutral-800"
-                        }`}
-                      />
-                    ))}
-                  </div>
+                  <p className="text-neutral-400 text-sm pl-11">
+                    {review.comment}
+                  </p>
                 </div>
-                <p className="text-neutral-400 text-sm pl-11">
-                  {review.comment}
-                </p>
-              </div>
-            ))}
+              ))
+            )}
           </TabsContent>
         </div>
       </Tabs>
     </div>
+  );
+}
+
+function ReviewForm({ soundId, onReviewSubmitted }) {
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      if (rating === 0) {
+        throw new Error("Please select a rating");
+      }
+      const review = await createReview(soundId, {
+        rating,
+        comment,
+      });
+      setRating(0);
+      setComment("");
+      if (onReviewSubmitted) onReviewSubmitted(review);
+    } catch (err) {
+      console.error(err);
+      setError(
+        err.response?.data?.message || err.message || "Failed to submit review"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="bg-neutral-800/30 p-4 rounded-xl border border-white/5 space-y-4 mb-6"
+    >
+      <h4 className="text-white font-medium text-sm">Write a Review</h4>
+
+      {error && (
+        <div className="text-red-400 text-xs bg-red-400/10 p-2 rounded">
+          {error}
+        </div>
+      )}
+
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => setRating(star)}
+            className="focus:outline-none"
+          >
+            <Star
+              className={`w-5 h-5 ${
+                star <= rating
+                  ? "fill-yellow-500 text-yellow-500"
+                  : "text-neutral-600 hover:text-yellow-500"
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+
+      <Textarea
+        placeholder="Share your thoughts..."
+        className="bg-neutral-900/50 border-white/10 text-neutral-200 text-sm min-h-[80px]"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        required
+      />
+
+      <div className="flex justify-end">
+        <Button
+          type="submit"
+          size="sm"
+          disabled={isSubmitting || rating === 0}
+          className="bg-violet-600 hover:bg-violet-700 text-white"
+        >
+          {isSubmitting ? "Submitting..." : "Post Review"}
+        </Button>
+      </div>
+    </form>
   );
 }

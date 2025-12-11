@@ -21,7 +21,7 @@ import { SoundRow } from "@/app/components/SoundRow";
 import { SoundStats } from "@/app/components/SoundStats";
 import { CategoryPopover } from "@/app/components/CategoryPopover";
 import SoundUpdateDialog from "@/app/components/SoundUpdateDialog"; // Ensure this matches filename
-import { productService } from "@/app/services/productService";
+import { deleteProduct } from "@/app/services/productService";
 
 export default function SoundLibraryClient({ initialSounds = [] }) {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function SoundLibraryClient({ initialSounds = [] }) {
   const confirmDelete = async () => {
     if (deletingSoundId) {
       try {
-        await productService.deleteProduct(deletingSoundId);
+        await deleteProduct(deletingSoundId);
         setDeletingSoundId(null);
 
         // 4. Magic: Re-runs the Server Page, fetches new DB data,

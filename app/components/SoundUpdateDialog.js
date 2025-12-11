@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import SoundForm from "@/app/components/SoundForm";
-import { productService } from "@/app/services/productService";
+import { updateProduct } from "@/app/services/productService";
 import { categoriesService } from "@/app/services/categoryService";
 
 export default function SoundUpdateDialog({
@@ -41,7 +41,13 @@ export default function SoundUpdateDialog({
     try {
       const formData = new FormData(e.target);
 
-      await productService.updateProduct(sound.id, formData);
+      // Remove empty file inputs so they don't overwrite existing data
+      const imageFile = formData.get("image_path");
+      if (imageFile && imageFile.size === 0) {
+        formData.delete("image_path");
+      }
+
+      await updateProduct(sound.id, formData);
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {

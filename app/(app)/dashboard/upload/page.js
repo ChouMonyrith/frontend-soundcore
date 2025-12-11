@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import FileUploader from "@/app/components/FileUploader";
 import SoundForm from "@/app/components/SoundForm";
 import { UploadGuidelines, FormatInfo } from "@/app/components/UploadSidebar";
-import { productService } from "@/app/services/productService";
+import { uploadProduct } from "@/app/services/productService";
 import { categoriesService } from "@/app/services/categoryService";
 import { useEffect } from "react";
 
@@ -46,7 +46,7 @@ export default function UploadPage() {
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
-      await productService.uploadProduct(formData);
+      await uploadProduct(formData);
       // Redirect on success
       router.push("/dashboard");
     } catch (error) {
