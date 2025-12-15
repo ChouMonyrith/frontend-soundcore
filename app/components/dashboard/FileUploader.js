@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Upload, FileAudio, X, Check, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 
 export default function FileUploader({ files, setFiles }) {
   const [dragActive, setDragActive] = useState(false);

@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/app/contexts/CartContext";
 import { ShoppingCart, Trash2, X, ShoppingBag, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/app/components/ui/badge";
+import { ScrollArea } from "@/app/components/ui/scroll-area";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/app/components/ui/popover";
 import Image from "next/image";
 
 export default function CartDropdown() {

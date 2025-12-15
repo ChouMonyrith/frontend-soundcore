@@ -12,8 +12,8 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+} from "@/app/components/ui/popover";
+import { Button } from "@/app/components/ui/button";
 
 const categories = [
   { name: "All Categories", icon: Layers },

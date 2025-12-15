@@ -2,8 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { Volume2, Play, Pause } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+import { Button } from "@/app/components/ui/button";
+import { Slider } from "@/app/components/ui/slider";
 
 export default function AudioPlayer({
   audioUrl,

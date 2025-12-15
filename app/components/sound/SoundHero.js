@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Star, Clock, Play, Pause } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/app/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 
 export default function SoundHero({ sound, isPlaying, togglePlay }) {
   return (

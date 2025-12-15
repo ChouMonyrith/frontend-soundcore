@@ -1,5 +1,5 @@
 import { Play, Heart } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/app/components/ui/badge";
 
 export default function ProfileSoundCard({ sound }) {
   return (

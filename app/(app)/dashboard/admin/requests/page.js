@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "@/app/components/ui/card";
+import { Badge } from "@/app/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -17,9 +17,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/app/components/ui/table";
 import { toast } from "sonner";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/app/components/ui/spinner";
 import {
   CheckCircle2,
   Clock,
@@ -29,9 +29,9 @@ import {
   XCircle,
 } from "lucide-react";
 import producerService from "@/app/services/producerService";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Toaster } from "@/components/ui/sonner";
+import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+import { Input } from "@/app/components/ui/input";
+import { Toaster } from "@/app/components/ui/sonner";
 
 export default function AdminRequestsPage() {
   const [requests, setRequests] = useState([]);

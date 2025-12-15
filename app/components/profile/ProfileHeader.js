@@ -11,8 +11,12 @@ import {
   MessageCircle,
   MoreHorizontal,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/app/components/ui/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/components/ui/avatar";
 
 export default function ProfileHeader({ user }) {
   const [isFollowing, setIsFollowing] = useState(false);

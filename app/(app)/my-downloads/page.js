@@ -13,9 +13,9 @@ import {
   ShieldCheck,
   Clock,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Badge } from "@/app/components/ui/badge";
 import { getDownloads } from "@/app/services/productService";
 import { PublicHeader } from "@/app/components/layout/PublicHeader";
 import { DownloadItem } from "@/app/components/downloads/DownloadItem";

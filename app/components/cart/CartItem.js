@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/app/components/ui/badge";
 import { Minus, Plus, Trash2, Music2 } from "lucide-react";
 
 export function CartItem({ item, updateCartItem, removeFromCart }) {

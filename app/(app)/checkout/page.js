@@ -6,16 +6,16 @@ import orderService from "@/app/services/orderService";
 import { useRouter } from "next/navigation";
 import { Loader2, ShieldCheck, Wallet, ArrowRight, Check } from "lucide-react";
 import QRCode from "react-qr-code";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+} from "@/app/components/ui/card";
+import { Separator } from "@/app/components/ui/separator";
+import { Badge } from "@/app/components/ui/badge";
 import { PublicHeader } from "@/app/components/layout/PublicHeader";
 
 export default function CheckoutPage() {

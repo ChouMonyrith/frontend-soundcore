@@ -1,5 +1,5 @@
 "use client";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/app/components/ui/card";
 import { HardDrive, Download, Music, Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 

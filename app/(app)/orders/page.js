@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import orderService from "@/app/services/orderService";
 import Link from "next/link";
 import { Loader2, Package, Calendar, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
 import { PublicHeader } from "@/app/components/layout/PublicHeader";
 
 export default function OrdersPage() {

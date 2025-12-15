@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import FileUploader from "@/app/components/dashboard/FileUploader";
 import SoundForm from "@/app/components/sound/SoundForm";
 import {

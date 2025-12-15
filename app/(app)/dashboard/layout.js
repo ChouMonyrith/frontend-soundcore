@@ -1,6 +1,6 @@
 import { DashboardSidebar } from "@/app/components/layout/DashboardSidebar";
 import { PublicHeader } from "@/app/components/layout/PublicHeader";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/app/components/ui/spinner";
 import { Suspense } from "react";
 
 export default function DashboardLayout({ children }) {

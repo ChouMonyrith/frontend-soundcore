@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/app/components/ui/card";
 import {
   ArrowRight,
   Check,
@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "../components/ui/badge";
-import { Button } from "../components/ui/button";
+import { Badge } from "./components/ui/badge";
+import { Button } from "./components/ui/button";
 import { PublicHeader } from "./components/layout/PublicHeader";
 import Footer from "./components/layout/Footer";
 import { categoriesService } from "@/app/services/categoryService";

@@ -11,10 +11,10 @@ import {
   Play,
   Loader2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/app/components/ui/badge";
+import { Separator } from "@/app/components/ui/separator";
+import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import Link from "next/link";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";

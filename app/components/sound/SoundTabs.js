@@ -1,11 +1,16 @@
 "use client";
 
 import { ShieldCheck, Zap, FileAudio, Layers, Clock, Star } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/components/ui/tabs";
+import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/app/components/ui/button";
+import { Textarea } from "@/app/components/ui/textarea";
 import { createReview } from "@/app/services/productService";
 
 export default function SoundTabs({ sound, reviews }) {

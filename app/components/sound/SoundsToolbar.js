@@ -2,14 +2,14 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search, Grid3x3, List, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/app/components/ui/dropdown-menu";
 
 export function SoundsToolbar({ viewMode, setViewMode }) {
   const router = useRouter();

@@ -4,7 +4,7 @@ import { RecentSale } from "@/app/components/dashboard/RecentSale";
 import { StatsOverview } from "@/app/components/dashboard/StatsOverview";
 import { Activity, Music, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 
 export default function DashboardPage() {

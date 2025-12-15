@@ -1,6 +1,6 @@
 "use client";
 
-import { Slider } from "@/components/ui/slider";
+import { Slider } from "@/app/components/ui/slider";
 import {
   Disc,
   HashIcon,
