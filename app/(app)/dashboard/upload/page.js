@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import FileUploader from "@/app/components/FileUploader";
-import SoundForm from "@/app/components/SoundForm";
-import { UploadGuidelines, FormatInfo } from "@/app/components/UploadSidebar";
+import FileUploader from "@/app/components/dashboard/FileUploader";
+import SoundForm from "@/app/components/sound/SoundForm";
+import {
+  UploadGuidelines,
+  FormatInfo,
+} from "@/app/components/dashboard/UploadSidebar";
 import { uploadProduct } from "@/app/services/productService";
 import { categoriesService } from "@/app/services/categoryService";
 import { useEffect } from "react";

@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { PublicHeader } from "@/app/components/PublicHeader";
+import { PublicHeader } from "@/app/components/layout/PublicHeader";
 
 export default function OrderDetailPage() {
   const { id } = useParams();

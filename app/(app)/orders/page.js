@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Loader2, Package, Calendar, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PublicHeader } from "@/app/components/PublicHeader";
+import { PublicHeader } from "@/app/components/layout/PublicHeader";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);

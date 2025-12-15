@@ -9,14 +9,14 @@ import {
   Bell,
   Download,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import Logo from "./Logo";
-import { Input } from "../../components/ui/input";
-import { Badge } from "../../components/ui/badge";
-import { useAuth } from "../contexts/AuthContext";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/app/contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import CartDropdown from "./CartDropdown";
+import CartDropdown from "@/app/components/cart/CartDropdown";
 
 export function PublicHeader({ cartCount = 0 }) {
   const { user, logout } = useAuth();
@@ -53,7 +53,7 @@ export function PublicHeader({ cartCount = 0 }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="shrink-0">
-            <Logo />
+            <Logo width={100} height={100} />
           </div>
 
           <div className="hidden md:flex flex-1 max-w-md mx-8">
@@ -79,9 +79,12 @@ export function PublicHeader({ cartCount = 0 }) {
             >
               Browse
             </Link>
-            <button className="text-sm font-medium text-neutral-400 hover:text-white transition-colors">
+            <Link
+              href="/pricing"
+              className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+            >
               Pricing
-            </button>
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4 ml-6">

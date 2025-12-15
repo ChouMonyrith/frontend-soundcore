@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getDownloads } from "@/app/services/productService";
-import { PublicHeader } from "@/app/components/PublicHeader";
-import { DownloadItem } from "@/app/components/DownloadItem";
+import { PublicHeader } from "@/app/components/layout/PublicHeader";
+import { DownloadItem } from "@/app/components/downloads/DownloadItem";
 
 export default function MyDownloadsPage() {
   const [downloads, setDownloads] = useState([]);

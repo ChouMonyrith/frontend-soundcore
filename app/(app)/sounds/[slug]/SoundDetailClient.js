@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AudioPlayer from "@/app/components/AudioPlayer";
-import SoundHero from "@/app/components/SoundHero";
-import SoundTabs from "@/app/components/SoundTabs";
+import AudioPlayer from "@/app/components/sound/AudioPlayer";
+import SoundHero from "@/app/components/sound/SoundHero";
+import SoundTabs from "@/app/components/sound/SoundTabs";
 import {
   ArtistProfile,
   PricingCard,
   RelatedSounds,
-} from "@/app/components/SidebarComponents";
+} from "@/app/components/layout/SidebarComponents";
 import useAudioMetadata from "@/app/hooks/useAudioMetadata";
 
 export default function SoundDetailClient({

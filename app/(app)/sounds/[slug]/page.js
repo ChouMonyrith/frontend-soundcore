@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
-import AudioPlayer from "@/app/components/AudioPlayer";
+import AudioPlayer from "@/app/components/sound/AudioPlayer";
 import {
   ArtistProfile,
   PricingCard,
   RelatedSounds,
-} from "@/app/components/SidebarComponents";
-import SoundHero from "@/app/components/SoundHero";
-import SoundTabs from "@/app/components/SoundTabs";
+} from "@/app/components/layout/SidebarComponents";
+import SoundHero from "@/app/components/sound/SoundHero";
+import SoundTabs from "@/app/components/sound/SoundTabs";
 import { getProductBySlug } from "@/app/services/productService";
 import SoundDetailClient from "./SoundDetailClient";
 

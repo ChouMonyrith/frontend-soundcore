@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/dialog";
 
 // Components
-import { SoundCard } from "@/app/components/SoundCard";
-import { SoundRow } from "@/app/components/SoundRow";
-import { SoundStats } from "@/app/components/SoundStats";
-import { CategoryPopover } from "@/app/components/CategoryPopover";
-import SoundUpdateDialog from "@/app/components/SoundUpdateDialog"; // Ensure this matches filename
+import { SoundCard } from "@/app/components/sound/SoundCard";
+import { SoundRow } from "@/app/components/sound/SoundRow";
+import { SoundStats } from "@/app/components/sound/SoundStats";
+import { CategoryPopover } from "@/app/components/sound/CategoryPopover";
+import SoundUpdateDialog from "@/app/components/sound/SoundUpdateDialog"; // Ensure this matches filename
 import { deleteProduct } from "@/app/services/productService";
 
 export default function SoundLibraryClient({ initialSounds = [] }) {

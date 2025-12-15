@@ -8,6 +8,8 @@ import {
   UploadCloud,
   Wallet,
   User,
+  MessageCircle,
+  Mails,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -24,7 +26,7 @@ export function DashboardSidebar() {
 
   const menuItems = [
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { label: "My Sounds", href: "/dashboard/sounds", icon: Music2 },
+    { label: "My Sounds", href: "/dashboard/my-sounds", icon: Music2 },
     { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
     { label: "Earnings", href: "/dashboard/earnings", icon: Wallet },
     { label: "Profile", href: "/dashboard/profile", icon: User },
@@ -33,7 +35,7 @@ export function DashboardSidebar() {
           {
             label: "Producer Requests",
             href: "/dashboard/admin/requests",
-            icon: HelpCircle,
+            icon: Mails,
           },
         ]
       : []),

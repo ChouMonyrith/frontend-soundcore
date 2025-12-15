@@ -2,6 +2,7 @@
 
 import {
   Play,
+  Pause,
   Heart,
   ShoppingCart,
   Music2,
@@ -21,10 +22,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { useCart } from "../contexts/CartContext";
-import { useState } from "react";
+import { useCart } from "@/app/contexts/CartContext";
+import { useState, useRef } from "react";
 
 export function SoundCard({
   sound,
@@ -42,11 +43,40 @@ export function SoundCard({
 
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isAddedToFav, setIsAddedToFav] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const audioRef = useRef(null);
 
   // Helper to prevent the card link from firing when clicking buttons
   const stopProp = (e) => {
     e.stopPropagation();
     e.preventDefault();
+  };
+
+  const togglePlay = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      // Reset all other audios if needed (for now isolated)
+      // const allAudios = document.querySelectorAll('audio');
+      // allAudios.forEach(a => { if(a !== audio) { a.pause(); } });
+
+      // Attempt play
+      audio.play().catch((err) => {
+        console.error("Audio playback failed:", err);
+      });
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
   };
 
   const handleAddToCart = async () => {
@@ -94,14 +124,11 @@ export function SoundCard({
 
   return (
     <div className="group relative bg-neutral-900 border border-white/5 rounded-2xl overflow-hidden hover:border-violet-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-900/10 h-full flex flex-col">
-      {/* 1. The Overlay Link (SEO Friendly, covers the card) */}
-      {!isDashboard && (
-        <Link
-          href={detailUrl}
-          className="absolute inset-0 z-0"
-          aria-label={`View ${sound.name}`}
-        />
-      )}
+      <Link
+        href={detailUrl}
+        className="absolute inset-0 z-0"
+        aria-label={`View ${sound.name}`}
+      />
 
       {/* --- Image Area --- */}
       <div className="relative h-48 w-full bg-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
@@ -121,10 +148,19 @@ export function SoundCard({
 
         {/* Play Button - Z-10 to sit above Link */}
         <button
-          onClick={stopProp} // Stop link click
+          onClick={togglePlay} // Toggle play
           className="relative z-10 w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 hover:bg-white hover:text-black shadow-xl"
         >
-          <Play className="w-6 h-6 ml-1 fill-current" />
+          {isPlaying ? (
+            <Pause className="w-6 h-6 fill-current" />
+          ) : (
+            <Play className="w-6 h-6 ml-1 fill-current" />
+          )}
+          <audio
+            src={`/api/audio?url=${encodeURIComponent(sound.file_path)}`}
+            ref={audioRef}
+            onEnded={handleEnded}
+          />
         </button>
 
         <div className="absolute top-3 right-3 z-10 flex gap-2 pointer-events-none">

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { PublicHeader } from "@/app/components/PublicHeader";
+import { PublicHeader } from "@/app/components/layout/PublicHeader";
 
 export default function CheckoutPage() {
   const { cart, isLoading: cartLoading, refreshCart } = useCart();

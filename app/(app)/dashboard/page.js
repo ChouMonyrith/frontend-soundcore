@@ -1,7 +1,7 @@
 "use client";
 
-import { RecentSale } from "@/app/components/RecentSale";
-import { StatsOverview } from "@/app/components/StatsOverview";
+import { RecentSale } from "@/app/components/dashboard/RecentSale";
+import { StatsOverview } from "@/app/components/dashboard/StatsOverview";
 import { Activity, Music, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "@/components/ui/button";

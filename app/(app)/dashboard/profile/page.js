@@ -1,9 +1,9 @@
 "use client";
 
-import ProfileHeader from "@/app/components/ProfileHeader";
-import ProfileSidebar from "@/app/components/ProfileSidebar";
-import ProfileStats from "@/app/components/ProfileStats";
-import ProfileContent from "@/app/components/ProfileContent";
+import ProfileHeader from "@/app/components/profile/ProfileHeader";
+import ProfileSidebar from "@/app/components/profile/ProfileSidebar";
+import ProfileStats from "@/app/components/profile/ProfileStats";
+import ProfileContent from "@/app/components/profile/ProfileContent";
 
 // --- Mock Data ---
 const userProfile = {

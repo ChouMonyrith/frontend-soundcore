@@ -16,8 +16,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { PublicHeader } from "./components/PublicHeader";
-import Footer from "./components/Footer";
+import { PublicHeader } from "./components/layout/PublicHeader";
+import Footer from "./components/layout/Footer";
 import { categoriesService } from "@/app/services/categoryService";
 
 // Enhanced data with modern color mappings
@@ -427,7 +427,7 @@ export default async function HomePage() {
               Ready to break the silence?
             </h2>
             <p className="text-lg text-neutral-300 mb-10 max-w-2xl mx-auto">
-              Join thousands of producers who trust SoundVault for their daily
+              Join thousands of producers who trust SoundCore for their daily
               driver sounds. Start creating with professional grade audio today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -2,7 +2,7 @@ import { Roboto } from "next/font/google";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import "./styles/globals.css";
-import { PublicHeader } from "./components/PublicHeader";
+import { PublicHeader } from "./components/layout/PublicHeader";
 
 export const metadata = {
   title: "Create Next App",

@@ -18,13 +18,11 @@ export default function CartDropdown() {
   const { cart, removeFromCart, isLoading, itemCount } = useCart();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Calculate subtotal from real cart data
   const subtotal = cart.data.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
   const items = cart.data;
-  console.log(items);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -151,7 +149,6 @@ export default function CartDropdown() {
             </div>
           </>
         ) : (
-          /* Empty State */
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
             <div className="w-12 h-12 bg-neutral-800 rounded-full flex items-center justify-center mb-3">
               <ShoppingBag className="w-5 h-5 text-neutral-500" />
@@ -162,14 +159,15 @@ export default function CartDropdown() {
             <p className="text-neutral-500 text-xs mb-4">
               Add some sounds to get started.
             </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-              className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10"
-            >
-              Browse Sounds
-            </Button>
+            <Link href="/sounds" onClick={() => setIsOpen(false)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 cursor-pointer"
+              >
+                Browse Sounds
+              </Button>
+            </Link>
           </div>
         )}
       </PopoverContent>

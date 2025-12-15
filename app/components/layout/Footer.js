@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import Logo from "./Logo";
 
 const footerLinks = {
   marketplace: [
@@ -64,14 +65,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
           {/* Column 1: Brand & Bio (Spans 4 columns) */}
           <div className="lg:col-span-4 space-y-6">
-            <Link href="/" className="flex items-center gap-2 text-white">
-              <div className="w-10 h-10 bg-linear-to-br from-violet-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-                <Music2 className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">
-                SoundVault
-              </span>
-            </Link>
+            <Logo
+              width={120}
+              height={120}
+              className=" text-white flex items-center justify-start"
+            />
 
             <p className="text-sm leading-relaxed max-w-xs">
               The premier marketplace for high-quality audio samples, loops, and
@@ -160,7 +158,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-          <p>© {currentYear} SoundVault Inc. All rights reserved.</p>
+          <p>© {currentYear} SoundCore Inc. All rights reserved.</p>
 
           <div className="flex items-center gap-8">
             {footerLinks.support.slice(2, 5).map((link) => (
@@ -178,10 +176,8 @@ export default function Footer() {
         {/* Made with Love (Optional Cute Touch) */}
         <div className="text-center mt-12">
           <p className="text-xs text-neutral-600 flex items-center justify-center gap-1">
-            Made for producers by{" "}
-            <span className="text-neutral-500 font-medium">
-              SoundVault Team
-            </span>
+            Made for producers by
+            <span className="text-neutral-500 font-medium">Chou Monyrith</span>
           </p>
         </div>
       </div>
