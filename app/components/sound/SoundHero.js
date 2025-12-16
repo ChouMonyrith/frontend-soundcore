@@ -70,8 +70,14 @@ export default function SoundHero({ sound, isPlaying, togglePlay }) {
               <div>{sound.bpm} BPM</div>
               <div className="w-1 h-1 bg-neutral-700 rounded-full"></div>
               <div className="flex items-center gap-1">
-                {sound.rating ? sound.rating : "No Rating Yet"}
-                <Star className="w-4 h-4 fill-current text-yellow-300" />
+                {sound.rating ? (
+                  <>
+                    {sound.rating}
+                    <Star className="w-4 h-4 fill-current text-yellow-300" />
+                  </>
+                ) : (
+                  "No Rating Yet"
+                )}
               </div>
             </div>
           </div>

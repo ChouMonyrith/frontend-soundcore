@@ -1,4 +1,4 @@
-import { getProducts } from "@/app/services/productService";
+import { getProducts, getTrendingTags } from "@/app/services/productService";
 import { SoundCard } from "@/app/components/sound/SoundCard";
 import { SoundRow } from "@/app/components/sound/SoundRow";
 import Link from "next/link";
@@ -14,9 +14,13 @@ export default async function SoundsPage({ searchParams }) {
     sort: params?.sort || "",
     page: params?.page || 1,
     limit: params?.limit || 12,
+    tags: params?.tags || "",
+    min_price: params?.min_price || "",
+    max_price: params?.max_price || "",
   };
 
   const soundsData = await getProducts(filters);
+  const tags = await getTrendingTags();
   const viewMode = params?.view || "grid";
 
   return (
@@ -24,7 +28,7 @@ export default async function SoundsPage({ searchParams }) {
     <div className="flex h-full w-full">
       {/* Sidebar: Fixed width, handles its own internal scrolling if needed */}
       <div className="hidden md:block w-72 shrink-0 border-r border-white/5 h-full overflow-hidden">
-        <FilterSidebar />
+        <FilterSidebar trendingTags={tags} />
       </div>
 
       {/* Main Content: Takes remaining width, handles the vertical page scroll */}

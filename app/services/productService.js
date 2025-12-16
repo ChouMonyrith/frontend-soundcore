@@ -48,7 +48,19 @@ export async function getProducts(filters) {
     Object.entries(filters).forEach(([key, value]) => {
       if (value === undefined || value === null || value === "") return;
       if (key === "category" && value === "All") return;
-      params.append(key, value);
+      if (key === "tags") {
+        const normalized = String(value)
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean)
+          .join(",");
+
+        if (!normalized) return;
+        params.set(key, normalized);
+        return;
+      }
+
+      params.set(key, value);
     });
   }
 
@@ -204,4 +216,9 @@ export async function createReview(id, reviewData) {
   );
 
   return response.data;
+}
+
+export async function getTrendingTags() {
+  const response = await apiClient.get("/api/tags/trending");
+  return response.data.tags;
 }
