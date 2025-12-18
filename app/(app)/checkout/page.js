@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useCart } from "@/app/contexts/CartContext";
-import orderService from "@/app/services/orderService";
-import { useRouter } from "next/navigation";
-import { Loader2, ShieldCheck, Wallet, ArrowRight, Check } from "lucide-react";
-import QRCode from "react-qr-code";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
-import { Badge } from "@/app/components/ui/badge";
-import { PublicHeader } from "@/app/components/layout/PublicHeader";
+import { useCart } from "@/app/contexts/CartContext";
+import orderService from "@/app/services/orderService";
+import { ArrowRight, Check, Loader2, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
 
 export default function CheckoutPage() {
   const { cart, isLoading: cartLoading, refreshCart } = useCart();
@@ -120,12 +119,19 @@ export default function CheckoutPage() {
                     className="flex justify-between items-center text-sm"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-neutral-800 border border-white/5 flex items-center justify-center text-xs text-neutral-500">
-                        WAV
+                      <div className="w-20 h-20 rounded-lg bg-neutral-800 border border-white/5 flex items-center justify-center text-xs text-neutral-500">
+                        <Image
+                          src={item.product.image_path}
+                          alt={item.product.name}
+                          width={80}
+                          height={80}
+                          unoptimized
+                          className="rounded-lg"
+                        />
                       </div>
                       <div>
                         <div className="text-white font-medium">
-                          {item.product.title}
+                          {item.product.name}
                         </div>
                         <div className="text-neutral-500 text-xs">
                           Standard License

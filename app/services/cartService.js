@@ -27,6 +27,7 @@ const cartService = {
         },
       }
     );
+
     return response.data;
   },
 

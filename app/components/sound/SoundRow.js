@@ -9,6 +9,7 @@ import {
   Trash2,
   Music2,
 } from "lucide-react";
+import { toast } from "sonner";
 import Image from "next/image";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -20,6 +21,7 @@ import {
 } from "@/app/components/ui/dropdown-menu";
 
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export function SoundRow({
   sound,
@@ -31,6 +33,8 @@ export function SoundRow({
 }) {
   const isDashboard = variant === "dashboard";
   const router = useRouter();
+  const { user } = useAuth();
+  const isOwner = sound.producer_profile_id === user?.producer_profile?.id;
 
   const handleRowClick = (e) => {
     // If the click target is interactive (button, link, etc.), don't navigate row
@@ -177,21 +181,39 @@ export function SoundRow({
       <td className="table-cell p-4 pr-6 text-right align-middle">
         {!isDashboard ? (
           /* Browse Actions: Like & Buy */
-          <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 text-neutral-500 hover:text-red-500 hover:bg-red-500/10"
-            >
-              <Heart className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => onAddToCart && onAddToCart(sound)}
-              className="h-8 bg-white text-black hover:bg-neutral-200 rounded-full text-xs font-semibold"
-            >
-              <ShoppingCart className="w-3 h-3 mr-2" /> Buy
-            </Button>
+          <div className="flex items-center justify-end gap-2 ">
+            {!isOwner && !sound.has_purchased ? (
+              <>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-neutral-500 hover:text-red-500 hover:bg-red-500/10"
+                >
+                  <Heart className="w-4 h-4" />
+                </Button>
+
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    if (onAddToCart) {
+                      const result = await onAddToCart(sound);
+                      if (result?.error?.response?.status === 409) {
+                        toast.error("You already own this sound");
+                      } else if (result?.success) {
+                        toast.success("Added to cart");
+                      }
+                    }
+                  }}
+                  className="h-10 bg-white/5 text-white hover:bg-white/10 cursor-pointer rounded-full text-xs font-semibold"
+                >
+                  <ShoppingCart className="w-3 h-3 mr-2 " /> Buy
+                </Button>
+              </>
+            ) : (
+              <span className="text-neutral-500 text-sm font-medium">
+                {isOwner ? "Owner" : "Owned"}
+              </span>
+            )}
           </div>
         ) : (
           /* Dashboard Actions: Edit Menu */

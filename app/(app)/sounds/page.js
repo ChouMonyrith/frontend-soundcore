@@ -24,14 +24,11 @@ export default async function SoundsPage({ searchParams }) {
   const viewMode = params?.view || "grid";
 
   return (
-    // h-full ensures this div fills the flex-1 container from SoundsBrowser
     <div className="flex h-full w-full">
-      {/* Sidebar: Fixed width, handles its own internal scrolling if needed */}
       <div className="hidden md:block w-72 shrink-0 border-r border-white/5 h-full overflow-hidden">
         <FilterSidebar trendingTags={tags} />
       </div>
 
-      {/* Main Content: Takes remaining width, handles the vertical page scroll */}
       <main className="flex-1 min-w-0 overflow-auto p-6 lg:p-10">
         <div className="flex flex-col gap-6 mb-8">
           <div>

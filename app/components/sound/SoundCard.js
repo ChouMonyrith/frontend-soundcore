@@ -12,6 +12,7 @@ import {
   Download,
   Star,
 } from "lucide-react";
+import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link"; // Import Link
 import { Button } from "@/app/components/ui/button";
@@ -38,8 +39,11 @@ export function SoundCard({
   const { addToCart } = useCart();
   const router = useRouter();
   const isDashboard = variant === "dashboard";
+  const isOwner = sound.producer_profile_id === user?.producer_profile?.id;
+
   const detailUrl = `/sounds/${sound.slug || sound.id}`; // Construct URL
   const licenseType = "standard";
+  const hasPurchased = sound.has_purchased;
 
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isAddedToFav, setIsAddedToFav] = useState(false);
@@ -64,8 +68,12 @@ export function SoundCard({
       audio.pause();
     } else {
       // Reset all other audios if needed (for now isolated)
-      // const allAudios = document.querySelectorAll('audio');
-      // allAudios.forEach(a => { if(a !== audio) { a.pause(); } });
+      const allAudios = document.querySelectorAll("audio");
+      allAudios.forEach((a) => {
+        if (a !== audio) {
+          a.pause();
+        }
+      });
 
       // Attempt play
       audio.play().catch((err) => {
@@ -89,11 +97,18 @@ export function SoundCard({
       const result = await addToCart(sound.id, licenseType, 1);
       if (result.success) {
         setIsAddedToCart(true);
+        toast.success("Added to cart");
       } else {
+        if (result.error?.response?.status === 409) {
+          toast.error("You already own this sound");
+        } else {
+          toast.error("Failed to add to cart");
+        }
         console.log(result.error);
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
+      toast.error("An unexpected error occurred");
     }
   };
 
@@ -119,8 +134,6 @@ export function SoundCard({
     //   setIsLoading(false);
     // }
   };
-
-  console.log(sound);
 
   return (
     <div className="group relative bg-neutral-900 border border-white/5 rounded-2xl overflow-hidden hover:border-violet-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-900/10 h-full flex flex-col">
@@ -268,7 +281,7 @@ export function SoundCard({
             <div className="text-xl font-bold text-white">${sound.price}</div>
 
             <div className="flex items-center gap-1">
-              <p className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
+              <p className="text-xs text-white/80 flex items-center gap-1">
                 <Download className="w-3 h-3" /> {sound.download_count || 0} Dls
               </p>
               {sound.rating > 0 && (
@@ -289,18 +302,28 @@ export function SoundCard({
           </div>
 
           {!isDashboard ? (
-            <Button
-              size="sm"
-              onClick={(e) => {
-                stopProp(e);
-                handleAddToCart();
-              }}
-              disabled={isAddedToCart}
-              className="bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-transform active:scale-95 ml-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              {isAddedToCart ? "Added" : "Add"}
-            </Button>
+            !isOwner && !hasPurchased ? (
+              <Button
+                size="sm"
+                onClick={(e) => {
+                  stopProp(e);
+                  handleAddToCart();
+                }}
+                disabled={isAddedToCart}
+                className="bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-transform active:scale-95 ml-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                {isAddedToCart ? "Added" : "Add"}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                disabled
+                className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 rounded-full font-semibold transition-all ml-auto cursor-not-allowed opacity-100"
+              >
+                Owned
+              </Button>
+            )
           ) : (
             <div className="flex gap-2">
               <Button

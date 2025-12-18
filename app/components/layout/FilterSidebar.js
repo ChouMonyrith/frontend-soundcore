@@ -118,7 +118,7 @@ export function FilterSidebar({ trendingTags = tags }) {
               <button
                 onClick={() => onToggleTag(tag)}
                 key={tag}
-                className={`text-xs px-3 py-1.5 rounded-full bg-neutral-800/50 border border-white/5 text-neutral-400 hover:text-white hover:border-violet-500/50 hover:bg-violet-500/10 transition-all active:bg-violet-500/10 active:text-white ${
+                className={`text-xs px-3 py-1.5 rounded-full cursor-pointer bg-neutral-800/50 border border-white/5 text-neutral-400 hover:text-white hover:border-violet-500/50 hover:bg-violet-500/10 transition-all active:bg-violet-500/10 active:text-white ${
                   searchParams.get("tags")?.split(",").includes(tag)
                     ? "bg-violet-500/10 text-violet-400"
                     : ""
@@ -150,7 +150,7 @@ export function FilterSidebar({ trendingTags = tags }) {
               step={1}
               value={priceRange}
               onValueChange={onSelectPriceRange}
-              className="mb-6 **:data-[slot=slider-range]:bg-white **:data-[slot=slider-track]:bg-white/10 **:data-[slot=slider-thumb]:border-white"
+              className="mb-6 cursor-pointer **:data-[slot=slider-range]:bg-white **:data-[slot=slider-track]:bg-white/10 **:data-[slot=slider-thumb]:border-white"
             />
 
             <div className="flex justify-between text-xs text-neutral-500 font-medium">

@@ -135,7 +135,7 @@ export default function CartDropdown() {
                 <Link href="/cart" onClick={() => setIsOpen(false)}>
                   <Button
                     variant="outline"
-                    className="w-full border-white/10 text-neutral-300 hover:text-white hover:bg-white/5 h-10 text-xs"
+                    className="w-full border-white/10 text-neutral-700 hover:text-white hover:bg-white/5 h-10 text-xs"
                   >
                     View Cart
                   </Button>

@@ -153,6 +153,14 @@ export function PublicHeader({ cartCount = 0 }) {
                           <Download className="w-4 h-4 text-emerald-400" />
                           My Downloads
                         </Link>
+                        <Link
+                          href="/cart"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <ShoppingCart className="w-4 h-4 text-orange-400" />
+                          My Cart
+                        </Link>
 
                         <Link
                           href="/dashboard/profile"
@@ -164,14 +172,24 @@ export function PublicHeader({ cartCount = 0 }) {
                         </Link>
                       </div>
                     ) : (
-                      <Link
-                        href="/my-downloads"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <Download className="w-4 h-4 text-emerald-400" />
-                        My Downloads
-                      </Link>
+                      <div className="p-1">
+                        <Link
+                          href="/my-downloads"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Download className="w-4 h-4 text-emerald-400" />
+                          My Downloads
+                        </Link>
+                        <Link
+                          href="/cart"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <ShoppingCart className="w-4 h-4 text-orange-400" />
+                          My Cart
+                        </Link>
+                      </div>
                     )}
                     <div className="p-1 border-t border-white/5 mt-1">
                       <button

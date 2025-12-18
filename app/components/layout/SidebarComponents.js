@@ -11,6 +11,7 @@ import {
   Play,
   Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { Separator } from "@/app/components/ui/separator";
@@ -22,6 +23,7 @@ import { useRouter } from "next/navigation";
 export function PricingCard({ sound }) {
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const isOwner = sound.producer_profile_id === user?.id;
   const router = useRouter();
   const [addedToCart, setAddedToCart] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,8 +44,14 @@ export function PricingCard({ sound }) {
       const result = await addToCart(sound.id, licenseType, 1);
       if (result.success) {
         setAddedToCart(true);
+        toast.success("Added to cart");
         setTimeout(() => setAddedToCart(false), 2000);
       } else {
+        if (result.error?.response?.status === 409) {
+          toast.error("You already own this sound");
+        } else {
+          toast.error("Failed to add to cart");
+        }
         console.error(result.error);
       }
     } catch (e) {
@@ -51,6 +59,11 @@ export function PricingCard({ sound }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    router.push("/checkout");
   };
 
   return (
@@ -69,37 +82,49 @@ export function PricingCard({ sound }) {
       </div>
 
       <div className="space-y-3 mb-6">
-        <Button
-          size="lg"
-          onClick={handleAddToCart}
-          disabled={addedToCart || loading}
-          className={`w-full h-12 text-base font-semibold transition-all duration-300 ${
-            addedToCart
-              ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-              : "bg-white text-black hover:bg-neutral-200"
-          }`}
-        >
-          {loading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : addedToCart ? (
-            <>
-              <Check className="w-5 h-5 mr-2" /> Added
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="w-5 h-5 mr-2" /> Add to Cart
-            </>
-          )}
-        </Button>
-        <Link href="/checkout">
+        {isOwner && !sound.has_purchased ? (
+          <>
+            <Button
+              size="lg"
+              onClick={handleAddToCart}
+              disabled={addedToCart || loading}
+              className={`w-full h-12 text-base font-semibold transition-all duration-300 ${
+                addedToCart
+                  ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                  : "bg-white text-black hover:bg-neutral-200"
+              }`}
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : addedToCart ? (
+                <>
+                  <Check className="w-5 h-5 mr-2" /> Added
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-5 h-5 mr-2" /> Add to Cart
+                </>
+              )}
+            </Button>
+            <Link href="/checkout">
+              <Button
+                onClick={handleBuyNow}
+                variant="outline"
+                size="lg"
+                className="w-full h-12 bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white mt-3"
+              >
+                Buy Now
+              </Button>
+            </Link>
+          </>
+        ) : (
           <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-12 bg-transparent border-white/10 text-white hover:bg-white/5 mt-3"
+            disabled
+            className="w-full h-12 text-base font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 cursor-not-allowed opacity-100"
           >
-            Buy Now
+            {isOwner ? "Owner" : "Purchased"}
           </Button>
-        </Link>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -160,7 +185,7 @@ export function ArtistProfile({ artist, avatar }) {
       </div>
       <Button
         variant="outline"
-        className="w-full border-white/10 text-neutral-300 hover:text-white hover:bg-white/5"
+        className="w-full border-white/10 text-neutral-700 hover:text-white hover:bg-white/5"
       >
         View Profile
       </Button>

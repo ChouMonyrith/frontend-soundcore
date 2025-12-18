@@ -22,7 +22,7 @@ export default function SoundDetailClient({
   const metadata = useAudioMetadata(soundData.file_path);
 
   const togglePlay = () => setIsPlaying(!isPlaying);
-
+  console.log(soundData);
   return (
     <div className="flex-1 h-full overflow-y-auto bg-neutral-950 text-neutral-100 pb-20 font-sans relative">
       {/* Background Ambience */}

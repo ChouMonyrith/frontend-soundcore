@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertCircle,
+  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -34,6 +35,8 @@ export default function OrderDetailPage() {
     };
     if (id) fetchOrder();
   }, [id]);
+
+  console.log(order);
 
   const handleDownload = async (productId) => {
     try {
@@ -154,13 +157,11 @@ export default function OrderDetailPage() {
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-neutral-800 rounded-lg flex items-center justify-center border border-white/5">
-                  <span className="text-xs font-bold text-neutral-500">
-                    WAV
-                  </span>
+                  <span className="text-xs font-bold text-neutral-500"></span>
                 </div>
                 <div>
                   <div className="font-medium text-white text-lg mb-1">
-                    {item.product.title}
+                    {item.product.name}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-neutral-500">
                     <Badge
@@ -175,11 +176,9 @@ export default function OrderDetailPage() {
               </div>
 
               {order.status === "paid" && (
-                <Button
-                  onClick={() => handleDownload(item.product.id)}
-                  className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/10"
-                >
-                  <Download className="w-4 h-4 mr-2" /> Download
+                <Button className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/10">
+                  <ArrowRight className="w-4 h-4 mr-2" />{" "}
+                  <Link href={`/my-downloads`}>Go to download</Link>
                 </Button>
               )}
             </div>
