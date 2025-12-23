@@ -222,3 +222,8 @@ export async function getTrendingTags() {
   const response = await apiClient.get("/api/tags/trending");
   return response.data.tags;
 }
+
+export async function getPopularProducts() {
+  const response = await apiClient.get("/api/products/popular");
+  return response.data.data;
+}

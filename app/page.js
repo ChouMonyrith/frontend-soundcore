@@ -19,6 +19,8 @@ import { Button } from "./components/ui/button";
 import { PublicHeader } from "./components/layout/PublicHeader";
 import Footer from "./components/layout/Footer";
 import { categoriesService } from "@/app/services/categoryService";
+import { getPopularProducts } from "./services/productService";
+import { SoundCard } from "./components/sound/SoundCard";
 
 // Enhanced data with modern color mappings
 const featuredSounds = [
@@ -131,6 +133,7 @@ const iconMap = {
 
 export default async function HomePage() {
   const categories = await categoriesService.getCategories();
+  const popularSounds = await getPopularProducts();
 
   console.log(categories);
 
@@ -168,7 +171,7 @@ export default async function HomePage() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Link href="/categories">
+                <Link href="/sounds">
                   <Button
                     size="lg"
                     className="h-12 px-8 bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-all hover:scale-105"
@@ -177,13 +180,15 @@ export default async function HomePage() {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 px-8 border-neutral-800 bg-neutral-900/50 text-white hover:bg-neutral-800 rounded-full backdrop-blur-sm"
-                >
-                  Start Selling
-                </Button>
+                <Link href="/producer/request">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-12 px-8 border-neutral-800 bg-neutral-900/50 text-white hover:bg-neutral-800 rounded-full backdrop-blur-sm"
+                  >
+                    Start Selling
+                  </Button>
+                </Link>
               </div>
 
               <div className="flex items-center gap-8 pt-4 border-t border-white/5">
@@ -270,7 +275,7 @@ export default async function HomePage() {
             </p>
           </div>
           <Link
-            href="/categories"
+            href="/sounds"
             className="text-violet-400 hover:text-violet-300 text-sm font-medium flex items-center gap-2 transition-colors"
           >
             View All Drops <ArrowRight className="w-4 h-4" />
@@ -278,55 +283,8 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredSounds.map((sound) => (
-            <Link key={sound.id} href={`/sounds/${sound.id}`}>
-              <div className="group relative bg-neutral-900 border border-white/5 rounded-2xl overflow-hidden hover:border-violet-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10">
-                <div className="relative aspect-square overflow-hidden">
-                  <Image
-                    src="/placeholder.png"
-                    alt={sound.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-
-                  {/* Hover Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-                    <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 hover:scale-110 transition-transform">
-                      <Play className="w-6 h-6 text-white fill-white ml-1" />
-                    </div>
-                  </div>
-
-                  <Badge className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white border-none hover:bg-black/80">
-                    {sound.category}
-                  </Badge>
-                </div>
-
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-white font-semibold truncate pr-2">
-                        {sound.name}
-                      </h3>
-                      <p className="text-sm text-neutral-400">{sound.artist}</p>
-                    </div>
-                    <div className="flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded text-yellow-500">
-                      <Star className="w-3 h-3 fill-yellow-500" />
-                      <span className="text-xs font-bold">{sound.rating}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-xs text-neutral-500">
-                      {sound.downloads} DLs
-                    </span>
-                    <span className="text-lg font-bold text-violet-400">
-                      ${sound.price}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+          {popularSounds.map((sound, index) => (
+            <SoundCard sound={sound} key={index} />
           ))}
         </div>
       </section>
@@ -350,7 +308,7 @@ export default async function HomePage() {
                 return (
                   <Link
                     key={category.name}
-                    href={`/categories/${category.name.toLowerCase()}`}
+                    href={`/sounds/?category=${category.name.toLowerCase()}`}
                     className="group"
                   >
                     <div className="h-full bg-neutral-900 border border-white/5 p-6 rounded-2xl hover:bg-neutral-800 hover:border-violet-500/30 transition-all text-center flex flex-col items-center justify-center gap-3 relative overflow-hidden">

@@ -260,19 +260,6 @@ export function SoundCard({
           <span className="bg-neutral-800 px-2 py-1 rounded-md border border-white/5">
             {sound.key}
           </span>
-          {(Array.isArray(sound.tags)
-            ? sound.tags
-            : (sound.tags || "").split(",").filter(Boolean)
-          )
-            .slice(0, 2)
-            .map((tag, i) => (
-              <span
-                key={i}
-                className="bg-neutral-800 px-2 py-1 rounded-md border border-white/5"
-              >
-                {tag.trim()}
-              </span>
-            ))}
         </div>
 
         {/* Footer Actions */}
@@ -282,7 +269,7 @@ export function SoundCard({
 
             <div className="flex items-center gap-1">
               <p className="text-xs text-white/80 flex items-center gap-1">
-                <Download className="w-3 h-3" /> {sound.download_count || 0} Dls
+                <Download className="w-3 h-3" /> {sound.download_count || 0} DLs
               </p>
               {sound.rating > 0 && (
                 <div className="flex items-center text-yellow-500">

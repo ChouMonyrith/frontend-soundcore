@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { producerService } from "@/app/services/producerService";
+import producerService from "@/app/services/producerService";
 import { useRouter } from "next/navigation";
 
 export default function BecomeProducerPage() {
