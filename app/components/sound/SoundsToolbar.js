@@ -11,10 +11,21 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 
+const SORT_OPTIONS = [
+  { value: "popular", label: "Popular" },
+  { value: "latest", label: "Latest" },
+  { value: "price_asc", label: "Price: Low to High" },
+  { value: "price_desc", label: "Price: High to Low" },
+];
+
 export function SoundsToolbar({ viewMode, setViewMode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const sortKey = searchParams.get("sort") || "popular";
+  const sortLabel =
+    SORT_OPTIONS.find((option) => option.value === sortKey)?.label || "Popular";
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
@@ -26,6 +37,12 @@ export function SoundsToolbar({ viewMode, setViewMode }) {
       }
       router.push(`${pathname}?${params.toString()}`);
     }
+  };
+
+  const handleSortChange = (mode) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", mode);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleViewModeChange = (mode) => {
@@ -62,12 +79,23 @@ export function SoundsToolbar({ viewMode, setViewMode }) {
               variant="ghost"
               className="text-neutral-300 hover:text-white hover:bg-white/5 gap-2"
             >
-              Sort by: Popular <ChevronDown className="w-4 h-4 opacity-50" />
+              Sort by: {sortLabel}
+              <ChevronDown className="w-4 h-4 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-neutral-900 border-white/10 text-neutral-300">
-            <DropdownMenuItem>Newest Arrivals</DropdownMenuItem>
-            <DropdownMenuItem>Price: Low to High</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleSortChange("popular")}>
+              Popular
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleSortChange("latest")}>
+              Newest Arrivals
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleSortChange("price_asc")}>
+              Price: Low to High
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleSortChange("price_desc")}>
+              Price: High to Low
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

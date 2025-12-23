@@ -59,6 +59,10 @@ export async function getProducts(filters) {
         params.set(key, normalized);
         return;
       }
+      if (key === "sort") {
+        params.set(key, value);
+        return;
+      }
 
       params.set(key, value);
     });
