@@ -1,8 +1,8 @@
 import { Roboto } from "next/font/google";
+import { Toaster } from "sonner";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import "./styles/globals.css";
-import { PublicHeader } from "./components/layout/PublicHeader";
 
 export const metadata = {
   title: "Create Next App",
@@ -19,7 +19,10 @@ export default function RootLayout({ children }) {
     <html lang="en" className={roboto.className}>
       <body className="min-h-screen bg-gray-100">
         <AuthProvider>
-          <CartProvider>{children}</CartProvider>
+          <CartProvider>
+            {children}
+            <Toaster position="bottom-right" richColors />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
