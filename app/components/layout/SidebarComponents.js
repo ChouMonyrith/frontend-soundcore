@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import Link from "next/link";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { ShareButton } from "./ShareButton";
 
 export function PricingCard({ sound }) {
   const { addToCart } = useCart();
@@ -139,9 +140,7 @@ export function PricingCard({ sound }) {
           <Heart className={`w-4 h-4 ${isFavorited ? "fill-current" : ""}`} />
           {isFavorited ? "Saved" : "Save"}
         </button>
-        <button className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/5 text-neutral-400 hover:bg-white/5 hover:text-white text-sm font-medium transition-colors">
-          <Share2 className="w-4 h-4" /> Share
-        </button>
+        <ShareButton sound={sound} />
       </div>
 
       <Separator className="my-6 bg-white/5" />

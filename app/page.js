@@ -1,26 +1,21 @@
-import { Card } from "@/app/components/ui/card";
-import {
-  ArrowRight,
-  Check,
-  Play,
-  Star,
-  Zap,
-  Music2,
-  Mic2,
-  Disc,
-  Sliders,
-  Activity,
-  Download,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { Badge } from "./components/ui/badge";
-import { Button } from "./components/ui/button";
-import { PublicHeader } from "./components/layout/PublicHeader";
-import Footer from "./components/layout/Footer";
 import { categoriesService } from "@/app/services/categoryService";
-import { getPopularProducts } from "./services/productService";
+import {
+  Activity,
+  ArrowRight,
+  Disc,
+  Download,
+  Mic2,
+  Music2,
+  Play,
+  Sliders,
+  Zap,
+} from "lucide-react";
+import Link from "next/link";
+import Footer from "./components/layout/Footer";
+import { PublicHeader } from "./components/layout/PublicHeader";
 import { SoundCard } from "./components/sound/SoundCard";
+import { Button } from "./components/ui/button";
+import { getPopularProducts } from "./services/productService";
 
 // Enhanced data with modern color mappings
 const featuredSounds = [

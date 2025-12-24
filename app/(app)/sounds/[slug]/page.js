@@ -1,14 +1,7 @@
-import { notFound } from "next/navigation";
-import AudioPlayer from "@/app/components/sound/AudioPlayer";
-import {
-  ArtistProfile,
-  PricingCard,
-  RelatedSounds,
-} from "@/app/components/layout/SidebarComponents";
-import SoundHero from "@/app/components/sound/SoundHero";
-import SoundTabs from "@/app/components/sound/SoundTabs";
 import { getProductBySlug } from "@/app/services/productService";
+import { notFound } from "next/navigation";
 import SoundDetailClient from "./SoundDetailClient";
+import { getShareUrl } from "@/app/lib/share";
 
 // Mock related sounds for now, or fetch them too if available
 const relatedSounds = [
@@ -45,6 +38,52 @@ const relatedSounds = [
     image: "bg-orange-600",
   },
 ];
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+
+  try {
+    const sound = await getProductBySlug(slug);
+
+    if (!sound) {
+      return {
+        title: "Sound Not Found",
+        description: "The requested sound could not be found.",
+      };
+    }
+
+    const artistName =
+      typeof sound.artist === "object" ? sound.artist.name : sound.artist;
+
+    return {
+      title: `${sound.name} by ${artistName}`,
+      description: sound.description.substring(0, 160), // SEO optimal length
+      openGraph: {
+        title: `${sound.name} | SoundCore`,
+        description: sound.description.substring(0, 200),
+        images: [
+          {
+            url: sound.image_path || "/default-sound-og.jpg",
+            width: 800,
+            height: 800,
+            alt: `${sound.name} Cover Art`,
+          },
+        ],
+        type: "music.song",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${sound.name} by ${artistName}`,
+        description: `Download ${sound.name} on SoundCore. ${sound.bpm} BPM, ${sound.key} Key.`,
+        images: [sound.image_path],
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Sound Details",
+    };
+  }
+}
 
 export default async function SoundDetailPage({ params }) {
   const { slug } = await params;
