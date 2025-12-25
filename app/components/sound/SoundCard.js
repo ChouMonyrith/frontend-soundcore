@@ -36,7 +36,7 @@ export function SoundCard({
   onAddToCart,
 }) {
   const { user } = useAuth();
-  const { addToCart } = useCart();
+  const { addToCart, isInCart } = useCart();
   const router = useRouter();
   const isDashboard = variant === "dashboard";
   const isOwner = sound.producer_profile_id === user?.producer_profile?.id;
@@ -45,7 +45,7 @@ export function SoundCard({
   const licenseType = "standard";
   const hasPurchased = sound.has_purchased;
 
-  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  // const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isAddedToFav, setIsAddedToFav] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -93,23 +93,7 @@ export function SoundCard({
       return;
     }
 
-    try {
-      const result = await addToCart(sound.id, licenseType, 1);
-      if (result.success) {
-        setIsAddedToCart(true);
-        toast.success("Added to cart");
-      } else {
-        if (result.error?.response?.status === 409) {
-          toast.error("You already own this sound");
-        } else {
-          toast.error("Failed to add to cart");
-        }
-        console.log(result.error);
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("An unexpected error occurred");
-    }
+    await addToCart(sound.id, licenseType, 1);
   };
 
   const handleAddToFav = async () => {
@@ -296,11 +280,11 @@ export function SoundCard({
                   stopProp(e);
                   handleAddToCart();
                 }}
-                disabled={isAddedToCart}
+                disabled={isInCart(sound.id)}
                 className="bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-transform active:scale-95 ml-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                {isAddedToCart ? "Added" : "Add"}
+                {isInCart(sound.id) ? "Added" : "Add"}
               </Button>
             ) : (
               <Button

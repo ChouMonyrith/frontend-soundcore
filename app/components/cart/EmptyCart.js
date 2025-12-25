@@ -20,7 +20,7 @@ export function EmptyCart() {
         <p className="text-neutral-400 mb-8">
           Looks like you haven&apos;t added any sounds yet.
         </p>
-        <Link href="/">
+        <Link href="/sounds">
           <Button className="bg-white text-black hover:bg-neutral-200 px-8 h-11 rounded-full font-semibold">
             Start Browsing
           </Button>
