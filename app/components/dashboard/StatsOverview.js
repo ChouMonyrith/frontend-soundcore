@@ -7,51 +7,56 @@ import {
   Users,
 } from "lucide-react";
 
-const stats = [
-  {
-    label: "Total Revenue",
-    value: "$12,458",
-    change: "+12.5%",
-    isPositive: true,
-    icon: DollarSign,
-    color: "text-green-600",
-    bgColor: "bg-green-50",
-  },
-  {
-    label: "Total Sounds",
-    value: "1,247",
-    change: "+8.2%",
-    isPositive: true,
-    icon: Music,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50",
-  },
-  {
-    label: "Downloads",
-    value: "8,942",
-    change: "+23.1%",
-    isPositive: true,
-    icon: Download,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-  },
-  {
-    label: "Active Users",
-    value: "2,341",
-    change: "-3.2%",
-    isPositive: false,
-    icon: Users,
-    color: "text-orange-600",
-    bgColor: "bg-orange-50",
-  },
-];
+const iconMap = {
+  DollarSign,
+  Music,
+  Download,
+  Users,
+};
 
-export function StatsOverview() {
+// Fallback data structure if needed, or just handle empty state
+export function StatsOverview({ stats = [] }) {
+  // Map simplified backend response to UI components
+  // Backend returns: { label, value, formatted }
+  // We need to add icons and colors based on label or index
+
+  // Configuration map based on label
+  const config = {
+    "Total Revenue": {
+      icon: DollarSign,
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+    },
+    "Total Sounds": {
+      icon: Music,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+    },
+    "Total Downloads": {
+      icon: Download,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+    },
+    "Active Customers": {
+      icon: Users,
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+    },
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
       {stats.map((stat) => {
-        const Icon = stat.icon;
-        const TrendIcon = stat.isPositive ? TrendingUp : TrendingDown;
+        const conf = config[stat.label] || {
+          icon: Music,
+          color: "text-gray-600",
+          bgColor: "bg-gray-50",
+        };
+        const Icon = conf.icon;
+
+        // Backend removed change % for now, we can omit it or calculate it if we had previous data
+        // For now, let's just not show it if not present, or show a placeholder?
+        // Detailed design: If 'change' is missing, maybe don't render the badge.
 
         return (
           <div
@@ -60,26 +65,29 @@ export function StatsOverview() {
           >
             <div className="flex items-center justify-between mb-4">
               <div
-                className={`${stat.bgColor} ${stat.color} p-3 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110`}
+                className={`${conf.bgColor} ${conf.color} p-3 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110`}
               >
                 <Icon className="w-6 h-6" />
               </div>
-              <div
-                className={`flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full ${
-                  stat.isPositive
-                    ? "text-emerald-400 bg-emerald-500/10"
-                    : "text-red-400 bg-red-500/10"
-                }`}
-              >
-                <TrendIcon className="w-3 h-3" />
-                <span>{stat.change}</span>
-              </div>
+              {/* Only show trend if we have it (backend refactor removed it for now) */}
+              {stat.change && (
+                <div
+                  className={`flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full ${
+                    stat.isPositive
+                      ? "text-emerald-400 bg-emerald-500/10"
+                      : "text-red-400 bg-red-500/10"
+                  }`}
+                >
+                  {/* <TrendIcon className="w-3 h-3" /> */}
+                  <span>{stat.change}</span>
+                </div>
+              )}
             </div>
             <div className="text-neutral-400 text-sm font-medium mb-1">
               {stat.label}
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">
-              {stat.value}
+              {stat.formatted}
             </div>
           </div>
         );

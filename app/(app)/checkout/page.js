@@ -23,6 +23,8 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("khqr");
   const [qrData, setQrData] = useState(null);
   const [polling, setPolling] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(3 * 60); // 3 minutes
+  const [isExpired, setIsExpired] = useState(false);
   const router = useRouter();
 
   const total = cart.data.reduce(
@@ -32,7 +34,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     let interval;
-    if (polling && qrData?.md5) {
+    if (polling && qrData?.md5 && !isExpired) {
       interval = setInterval(async () => {
         try {
           const status = await orderService.checkStatus(qrData.md5);
@@ -47,10 +49,26 @@ export default function CheckoutPage() {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [polling, qrData, router, refreshCart]);
+  }, [polling, qrData, router, refreshCart, isExpired]);
+
+  // Countdown Timer Effect
+  useEffect(() => {
+    let timer;
+    if (polling && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && polling) {
+      setPolling(false);
+      setIsExpired(true);
+    }
+    return () => clearInterval(timer);
+  }, [polling, timeLeft]);
 
   const handleCheckout = async () => {
     setLoading(true);
+    setIsExpired(false);
+    setTimeLeft(3 * 60);
     try {
       if (paymentMethod === "khqr") {
         const data = await orderService.createOrder("khqr");
@@ -235,21 +253,45 @@ export default function CheckoutPage() {
                 <div className="flex flex-col items-center py-4 animate-in fade-in zoom-in duration-300">
                   <div className="text-center mb-6">
                     <h3 className="text-lg font-bold text-white mb-1">
-                      Scan to Pay
+                      {isExpired ? "QR Code Expired" : "Scan to Pay"}
                     </h3>
-                    <p className="text-neutral-400 text-sm">
-                      Open your banking app and scan the code.
-                    </p>
+                    {!isExpired && (
+                      <p className="text-neutral-400 text-sm">
+                        Expires in {Math.floor(timeLeft / 60)}:
+                        {(timeLeft % 60).toString().padStart(2, "0")}
+                      </p>
+                    )}
                   </div>
 
-                  <div className="bg-white p-4 rounded-2xl shadow-xl shadow-black/50 mb-6">
+                  <div
+                    className={`bg-white p-4 rounded-2xl shadow-xl shadow-black/50 mb-6 ${
+                      isExpired ? "opacity-50 blur-sm" : ""
+                    }`}
+                  >
                     <QRCode value={qrData.qr_payload} size={220} />
                   </div>
 
-                  <div className="flex items-center gap-2 text-violet-400 text-sm bg-violet-500/10 px-4 py-2 rounded-full border border-violet-500/20">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Waiting for payment confirmation...
-                  </div>
+                  {isExpired ? (
+                    <div className="flex flex-col items-center gap-4">
+                      <p className="text-red-400 text-sm">
+                        This payment session has timed out.
+                      </p>
+                      <Button
+                        onClick={() => {
+                          setQrData(null);
+                          setIsExpired(false);
+                        }}
+                        variant="destructive"
+                      >
+                        Try Again
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-violet-400 text-sm bg-violet-500/10 px-4 py-2 rounded-full border border-violet-500/20">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Waiting for payment confirmation...
+                    </div>
+                  )}
 
                   {/* Debug Info (Optional - Can hide in production) */}
                   <div className="mt-8 pt-4 border-t border-white/5 w-full text-center">

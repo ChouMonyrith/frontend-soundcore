@@ -2,42 +2,47 @@
 
 import { RecentSale } from "@/app/components/dashboard/RecentSale";
 import { StatsOverview } from "@/app/components/dashboard/StatsOverview";
+import { Button } from "@/app/components/ui/button";
 import { Activity, Music, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { Button } from "@/app/components/ui/button";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import {
+  dashboardStats,
+  dashboardRecentSales,
+} from "@/app/services/dashboardService";
+import { Spinner } from "@/app/components/ui/spinner";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
+  const [stats, setStats] = useState([]);
+  const [recentSales, setRecentSales] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsData, salesData] = await Promise.all([
+          dashboardStats(),
+          dashboardRecentSales(),
+        ]);
+        setStats(statsData);
+        setRecentSales(salesData);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data", error);
+      }
+    };
+
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
+  console.log("stats", stats);
+  console.log("recentSales", recentSales);
 
   if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center bg-neutral-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-500 border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
-        <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 max-w-md w-full text-center backdrop-blur-xl">
-          <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-400">
-            <User className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">
-            Access Restricted
-          </h2>
-          <p className="text-neutral-400 mb-6">
-            You need to be logged in to view your dashboard and manage your
-            assets.
-          </p>
-          <Link href="/sign-in">
-            <Button className="w-full bg-violet-600 hover:bg-violet-500 text-white">
-              Sign In
-            </Button>
-          </Link>
-        </div>
+        <Spinner className="size-16" />
       </div>
     );
   }
@@ -61,24 +66,13 @@ export default function DashboardPage() {
               Here is what is happening with your sound library today.
             </p>
           </div>
-          {/* <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="border-white/10 hover:bg-white/5 text-neutral-300"
-            >
-              View Reports
-            </Button>
-            <Button className="bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20">
-              <Link href="/dashboard/upload">Upload New Sound</Link>
-            </Button>
-          </div> */}
         </div>
 
-        <StatsOverview />
+        <StatsOverview stats={stats} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <RecentSale />
+            <RecentSale sales={recentSales} />
           </div>
           {/* Added a side widget for completeness */}
           <div className="bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-white/5 p-6 h-fit">
