@@ -113,7 +113,12 @@ export function PublicHeader({ cartCount = 0 }) {
                 >
                   <div className="w-8 h-8 bg-linear-to-br from-violet-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold shadow-inner">
                     {user.name ? (
-                      user.name.charAt(0).toUpperCase()
+                      user.name
+                        .trim()
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((word) => word.charAt(0).toUpperCase())
+                        .join("")
                     ) : (
                       <User className="w-4 h-4" />
                     )}

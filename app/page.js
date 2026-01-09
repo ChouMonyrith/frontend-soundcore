@@ -16,106 +16,8 @@ import { PublicHeader } from "./components/layout/PublicHeader";
 import { SoundCard } from "./components/sound/SoundCard";
 import { Button } from "./components/ui/button";
 import { getPopularProducts } from "./services/productService";
-
-// Enhanced data with modern color mappings
-const featuredSounds = [
-  {
-    id: 1,
-    name: "Deep Bass Drop",
-    artist: "Bass Master",
-    category: "Bass",
-    price: 9.99,
-    rating: 4.8,
-    downloads: 567,
-    image:
-      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80",
-  },
-  {
-    id: 2,
-    name: "Cinematic Riser",
-    artist: "Epic Sounds",
-    category: "FX",
-    price: 12.99,
-    rating: 4.9,
-    downloads: 423,
-    image:
-      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80",
-  },
-  {
-    id: 3,
-    name: "Trap Hi-Hat Loop",
-    artist: "Rhythm Pro",
-    category: "Drums",
-    price: 7.99,
-    rating: 4.7,
-    downloads: 789,
-    image:
-      "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&q=80",
-  },
-  {
-    id: 4,
-    name: "Ambient Pad",
-    artist: "Atmosphere",
-    category: "Synth",
-    price: 14.99,
-    rating: 5.0,
-    downloads: 312,
-    image:
-      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80",
-  },
-];
-
-// const categories = [
-//   {
-//     name: "Bass",
-//     count: 234,
-//     icon: <Activity />,
-//     color: "text-violet-400",
-//     bg: "bg-violet-500/10",
-//   },
-//   {
-//     name: "Drums",
-//     count: 456,
-//     icon: <Disc />,
-//     color: "text-blue-400",
-//     bg: "bg-blue-500/10",
-//   },
-//   {
-//     name: "FX",
-//     count: 189,
-//     icon: <Zap />,
-//     color: "text-emerald-400",
-//     bg: "bg-emerald-500/10",
-//   },
-//   {
-//     name: "Synth",
-//     count: 312,
-//     icon: <Sliders />,
-//     color: "text-orange-400",
-//     bg: "bg-orange-500/10",
-//   },
-//   {
-//     name: "Vocal",
-//     count: 145,
-//     icon: <Mic2 />,
-//     color: "text-pink-400",
-//     bg: "bg-pink-500/10",
-//   },
-//   {
-//     name: "Instrument",
-//     count: 267,
-//     icon: <Music2 />,
-//     color: "text-indigo-400",
-//     bg: "bg-indigo-500/10",
-//   },
-// ];
-
-const topProducers = [
-  { name: "Bass Master", sales: 1234, avatar: "BM" },
-  { name: "Epic Sounds", sales: 1089, avatar: "ES" },
-  { name: "Rhythm Pro", sales: 967, avatar: "RP" },
-  { name: "Atmosphere", sales: 845, avatar: "AT" },
-];
+import { getTopProducers } from "./services/producerService";
+import Image from "next/image";
 
 const iconMap = {
   Activity: Activity,
@@ -129,8 +31,9 @@ const iconMap = {
 export default async function HomePage() {
   const categories = await categoriesService.getCategories();
   const popularSounds = await getPopularProducts();
+  const topProducers = await getTopProducers();
 
-  console.log(categories);
+  // console.log(categories);
 
   return (
     // Changed to Dark Mode Base
@@ -347,8 +250,23 @@ export default async function HomePage() {
               className="group flex items-center gap-4 p-4 rounded-2xl bg-neutral-900/50 border border-white/5 hover:bg-neutral-800 transition-colors"
             >
               <div className="relative">
-                <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center text-xl font-bold text-neutral-300 ring-2 ring-neutral-800 group-hover:ring-violet-500 transition-all">
-                  {producer.avatar}
+                <div className="w-16 h-16 bg-linear-to-br from-violet-600 to-indigo-600 rounded-full flex items-center justify-center text-xl font-bold text-neutral-300 ring-2 ring-neutral-800 group-hover:ring-violet-500 transition-all">
+                  {producer.avatar ? (
+                    <Image
+                      src={producer.avatar}
+                      alt={producer.display_name}
+                      width={64}
+                      height={64}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    producer.display_name
+                      ?.trim()
+                      .split(/\s+/)
+                      .slice(0, 2)
+                      .map((word) => word.charAt(0).toUpperCase())
+                      .join("")
+                  )}
                 </div>
                 {index === 0 && (
                   <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center border-2 border-neutral-900">
@@ -358,10 +276,10 @@ export default async function HomePage() {
               </div>
               <div>
                 <h3 className="font-semibold text-white group-hover:text-violet-400 transition-colors">
-                  {producer.name}
+                  {producer.display_name}
                 </h3>
                 <p className="text-sm text-neutral-500">
-                  {producer.sales.toLocaleString()} Sales
+                  {producer.sales_count.toLocaleString()} Sales
                 </p>
               </div>
             </div>
