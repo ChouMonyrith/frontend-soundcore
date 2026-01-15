@@ -246,7 +246,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {topProducers.map((producer, index) => (
             <div
-              key={producer.name}
+              key={producer.id}
               className="group flex items-center gap-4 p-4 rounded-2xl bg-neutral-900/50 border border-white/5 hover:bg-neutral-800 transition-colors"
             >
               <div className="relative">

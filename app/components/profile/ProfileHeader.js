@@ -18,9 +18,7 @@ import {
   AvatarImage,
 } from "@/app/components/ui/avatar";
 
-export default function ProfileHeader({ user }) {
-  const [isFollowing, setIsFollowing] = useState(false);
-
+export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
   return (
     <>
       {/* Cover Image Section */}
@@ -28,14 +26,16 @@ export default function ProfileHeader({ user }) {
         <div className={`absolute inset-0 ${user.coverImage}`}></div>
         <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/20 to-transparent"></div>
 
-        <div className="absolute top-4 right-4 md:top-8 md:right-8">
-          <Button
-            variant="outline"
-            className="bg-black/20 backdrop-blur-md border-white/10 text-white hover:bg-black/40 border-none"
-          >
-            <Settings className="w-4 h-4 mr-2" /> Settings
-          </Button>
-        </div>
+        {isOwnProfile && (
+          <div className="absolute top-4 right-4 md:top-8 md:right-8">
+            <Button
+              variant="outline"
+              className="bg-black/20 backdrop-blur-md border-white/10 text-white hover:bg-black/40 border-none"
+            >
+              <Settings className="w-4 h-4 mr-2" /> Settings
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
@@ -84,35 +84,39 @@ export default function ProfileHeader({ user }) {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 text-neutral-500" />
-                    <span>Joined {user.joinDate}</span>
+                    <span>Joined {user.join_date || user.joinDate}</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex items-center justify-center md:justify-end gap-3">
-                <Button
-                  onClick={() => setIsFollowing(!isFollowing)}
-                  className={`min-w-[120px] transition-all duration-300 ${
-                    isFollowing
-                      ? "bg-neutral-800 text-white hover:bg-neutral-700"
-                      : "bg-white text-black hover:bg-neutral-200"
-                  }`}
-                >
-                  {isFollowing ? (
-                    "Following"
-                  ) : (
-                    <>
-                      <UserPlus className="w-4 h-4 mr-2" /> Follow
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-white/10 text-neutral-300 hover:text-white hover:bg-white/5"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                </Button>
+                {!isOwnProfile && (
+                  <>
+                    <Button
+                      onClick={onFollow}
+                      className={`min-w-[120px] transition-all duration-300 ${
+                        user.is_following
+                          ? "bg-neutral-800 text-white hover:bg-neutral-700"
+                          : "bg-white text-black hover:bg-neutral-200"
+                      }`}
+                    >
+                      {user.is_following ? (
+                        "Following"
+                      ) : (
+                        <>
+                          <UserPlus className="w-4 h-4 mr-2" /> Follow
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="border-white/10 text-neutral-300 hover:text-white hover:bg-white/5"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"

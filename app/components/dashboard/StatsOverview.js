@@ -14,12 +14,7 @@ const iconMap = {
   Users,
 };
 
-// Fallback data structure if needed, or just handle empty state
 export function StatsOverview({ stats = [] }) {
-  // Map simplified backend response to UI components
-  // Backend returns: { label, value, formatted }
-  // We need to add icons and colors based on label or index
-
   // Configuration map based on label
   const config = {
     "Total Revenue": {
@@ -54,10 +49,6 @@ export function StatsOverview({ stats = [] }) {
         };
         const Icon = conf.icon;
 
-        // Backend removed change % for now, we can omit it or calculate it if we had previous data
-        // For now, let's just not show it if not present, or show a placeholder?
-        // Detailed design: If 'change' is missing, maybe don't render the badge.
-
         return (
           <div
             key={stat.label}
@@ -69,7 +60,6 @@ export function StatsOverview({ stats = [] }) {
               >
                 <Icon className="w-6 h-6" />
               </div>
-              {/* Only show trend if we have it (backend refactor removed it for now) */}
               {stat.change && (
                 <div
                   className={`flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-full ${

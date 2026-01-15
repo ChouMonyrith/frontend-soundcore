@@ -15,6 +15,9 @@ const nextConfig = {
   // 允许开发环境跨域访问 _next/* 资源 (必须)
   experimental: {
     allowedDevOrigins: ["http://127.0.0.1:3000", "http://localhost:3000"],
+    serverActions: {
+      bodySizeLimit: "50mb",
+    },
   },
 
   // 可选：给 API 或静态资源增加 CORS 头
