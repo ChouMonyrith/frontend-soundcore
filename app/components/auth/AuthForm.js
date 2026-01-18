@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function AuthForm({ mode = "login", token = null }) {
   const { login, register, forgotPassword, resetPassword } = useAuth();
@@ -107,7 +107,8 @@ export default function AuthForm({ mode = "login", token = null }) {
         setMessage(message);
       }
     } catch (error) {
-      setMessage(error.message || "Something went wrong");
+      if (error.response?.data?.message)
+        setMessage(error.response.data.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

@@ -167,6 +167,7 @@ export function PricingCard({ sound }) {
 
 export function ArtistProfile({ artist, avatar }) {
   if (!artist) return null; // Safety check
+  console.log("artist", artist);
   return (
     <div className="bg-neutral-900/30 border border-white/5 rounded-3xl p-6">
       <div className="flex items-center gap-4 mb-4">
@@ -182,12 +183,12 @@ export function ArtistProfile({ artist, avatar }) {
           </div>
         </div>
       </div>
-      <Button
-        variant="outline"
-        className="w-full border-white/10 text-neutral-700 hover:text-white hover:bg-white/5"
+      <Link
+        href={`/profiles/${artist.id}`}
+        className="w-full flex justify-center items-center py-2 rounded-lg border border-white/10 text-neutral-300 hover:text-white hover:bg-white/5"
       >
         View Profile
-      </Button>
+      </Link>
     </div>
   );
 }

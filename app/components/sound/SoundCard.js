@@ -127,23 +127,25 @@ export function SoundCard({
         aria-label={`View ${sound.name}`}
       />
 
-      {/* --- Image Area --- */}
       <div className="relative h-48 w-full bg-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
         {sound.image_path ? (
           <Image
             src={sound.image_path}
             alt={sound.name}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            sizes="(max-width: 640px) 100vw,
+           (max-width: 1024px) 50vw,
+           25vw"
+            loading="lazy"
             unoptimized
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(23,23,23,1)_100%)] opacity-60 z-10 flex items-center justify-center">
+          <div className="absolute inset-0 bg-linear-to-b from-transparent to-neutral-900 z-10 flex items-center justify-center">
             <Music2 className="w-12 h-12 text-white/20" />
           </div>
         )}
 
-        {/* Play Button - Z-10 to sit above Link */}
         <button
           onClick={togglePlay} // Toggle play
           className="relative z-10 w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 hover:bg-white hover:text-black shadow-xl"
@@ -177,11 +179,7 @@ export function SoundCard({
           </Badge>
         </div>
       </div>
-
-      {/* --- Details Area --- */}
       <div className="p-5 flex flex-col flex-1 relative z-10 pointer-events-none">
-        {/* pointer-events-none on container, auto on children to let clicks pass through to Link underneath empty spaces */}
-
         <div className="flex justify-between items-start mb-1">
           <div className="min-w-0 flex-1">
             <h3 className="font-bold text-white text-lg truncate pr-2 group-hover:text-violet-400 transition-colors">
@@ -197,7 +195,6 @@ export function SoundCard({
             )}
           </div>
 
-          {/* Action Buttons */}
           <div className="pointer-events-auto" onClick={stopProp}>
             {!isDashboard ? (
               <button

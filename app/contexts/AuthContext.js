@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useEffect } from "react";
 import { authService } from "@/app/services/authService";
+import { toast } from "sonner";
 
 const AuthContext = createContext();
 
@@ -31,7 +32,6 @@ export function AuthProvider({ children }) {
     try {
       await authService.login(email, password);
 
-      // Fetch the user profile *after* login to update context state
       const response = await authService.getUser();
       setUser(response.data);
 
@@ -63,10 +63,11 @@ export function AuthProvider({ children }) {
         name,
         email,
         password,
-        password_confirmation
+        password_confirmation,
       );
 
       router.push("/sign-in");
+      toast.success("Registration successful, Please verify your email,");
 
       return response.data.message;
     } catch (error) {
@@ -104,7 +105,7 @@ export function AuthProvider({ children }) {
     token,
     email,
     password,
-    password_confirmation
+    password_confirmation,
   ) => {
     setLoading(true);
     try {
@@ -112,7 +113,7 @@ export function AuthProvider({ children }) {
         token,
         email,
         password,
-        password_confirmation
+        password_confirmation,
       );
 
       if (response.status === 200) {

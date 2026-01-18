@@ -6,6 +6,7 @@ import {
 } from "@/app/components/ui/tabs";
 import { Grid3x3, List, Layers } from "lucide-react";
 import ProfileSoundCard from "./ProfileSoundCard";
+import { SoundCard } from "../sound/SoundCard";
 
 export default function ProfileContent({ sounds }) {
   return (
@@ -45,7 +46,7 @@ export default function ProfileContent({ sounds }) {
       <TabsContent value="sounds" className="mt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {sounds.map((sound) => (
-            <ProfileSoundCard key={sound.id} sound={sound} />
+            <SoundCard key={sound.id} sound={sound} />
           ))}
         </div>
       </TabsContent>

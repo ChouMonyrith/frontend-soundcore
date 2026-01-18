@@ -25,7 +25,6 @@ export async function requestProducerStatus(data) {
 
   const response = await apiClient.post("/api/producer/request", data, {
     headers: {
-      "Content-Type": "application/json",
       "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
     },
     withCredentials: true,

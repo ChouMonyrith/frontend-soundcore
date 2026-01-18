@@ -16,7 +16,6 @@ export default function ProfilePage() {
         const profileData = await profileService.getMyProfile();
         setProfile(profileData);
 
-        // Once we have the profile ID, fetch the sounds
         if (profileData?.id) {
           const soundsData = await profileService.getProfileSounds(
             profileData.id
@@ -34,14 +33,6 @@ export default function ProfilePage() {
     fetchProfileData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center text-neutral-400">
-        Loading profile...
-      </div>
-    );
-  }
-
   if (!profile) {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center text-neutral-400">
@@ -55,7 +46,7 @@ export default function ProfilePage() {
       profile={profile}
       sounds={sounds}
       isOwnProfile={true}
-      onFollow={() => {}} // No-op for own profile
+      onFollow={() => {}}
     />
   );
 }

@@ -2,7 +2,7 @@ import apiClient, { getCookie, getCsrfCookie } from "@/app/lib/api";
 
 export const authService = {
   async getUser(config = {}) {
-    // 1. Server-Side Logic
+    //Server-Side Logic
     if (typeof window === "undefined") {
       const { cookies } = await import("next/headers");
       const cookieStore = await cookies();
@@ -13,13 +13,12 @@ export const authService = {
         headers: {
           ...config.headers,
           Cookie: cookieStore.toString(),
-          // Sanctum requires a Referer header for stateful requests from the server
           Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
         },
       });
     }
 
-    // 2. Client-Side Logic (Your original code)
+    //Client-Side
     if (Object.keys(config).length === 0) {
       await getCsrfCookie();
       const xsrfToken = getCookie("XSRF-TOKEN");
