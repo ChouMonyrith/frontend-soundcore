@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -7,12 +8,73 @@ import {
   FileAudio,
   Clock,
   Calendar,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import useAudioMetadata from "@/app/hooks/useAudioMetadata";
+import apiClient from "@/app/lib/api";
 
 export function DownloadItem({ item }) {
   const metadata = useAudioMetadata(item.product.file_path);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+
+      // Fetch the file as a blob
+      const response = await apiClient.get(item.download_url, {
+        responseType: "blob",
+      });
+
+      const blob = response.data;
+      const safeName = item.product.name
+        .replace(/[^a-z0-9]/gi, "_")
+        .toLowerCase();
+      const filename = `${safeName}.${metadata.format || "wav"}`; // Default extension or derive from mime
+
+      // Check for File System Access API support
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [
+              {
+                description: "Audio File",
+                accept: { [blob.type]: [`.${metadata.format || "wav"}`] },
+              },
+            ],
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          return;
+        } catch (err) {
+          if (err.name === "AbortError") {
+            // User cancelled the picker, do nothing
+            return;
+          }
+          // Fallback if picker fails for other reason (e.g. security block)
+          console.warn("File picker failed, falling back to download", err);
+        }
+      }
+
+      // Fallback: Create generic anchor tag download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Optional: Add toast notification here
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="group bg-neutral-900/50 backdrop-blur-md border border-white/5 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-6 transition-all hover:bg-neutral-900/80 hover:border-white/10 shadow-lg">
@@ -76,15 +138,18 @@ export function DownloadItem({ item }) {
 
       {/* Action */}
       <div className="w-full sm:w-auto">
-        <a
-          href={item.download_url} // Ensure API returns a direct download link or handler
-          download
-          className="w-full sm:w-auto"
+        <Button
+          onClick={handleDownload}
+          disabled={isDownloading}
+          className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 font-semibold shadow-lg shadow-white/5 active:scale-95 transition-transform"
         >
-          <Button className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 font-semibold shadow-lg shadow-white/5 active:scale-95 transition-transform">
-            <Download className="w-4 h-4 mr-2" /> Download
-          </Button>
-        </a>
+          {isDownloading ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Download className="w-4 h-4 mr-2" />
+          )}
+          {isDownloading ? "Downloading..." : "Download"}
+        </Button>
       </div>
     </div>
   );
