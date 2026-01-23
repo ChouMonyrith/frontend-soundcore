@@ -30,7 +30,7 @@ export async function uploadProduct(formData) {
       const errorData = await response.json();
       console.error("Upload failed details:", errorData);
       throw new Error(
-        errorData.message || `Upload failed with status ${response.status}`
+        errorData.message || `Upload failed with status ${response.status}`,
       );
     }
 
@@ -73,7 +73,11 @@ export async function getProducts(filters) {
   });
 
   const data = response.data;
-  return Array.isArray(data) ? data : data.data || [];
+  return {
+    data: Array.isArray(data) ? data : data.data || [],
+    meta: data.meta,
+    links: data.links,
+  };
 }
 
 export async function getProductBySlug(slug) {
@@ -133,16 +137,13 @@ export async function updateProduct(id, formData) {
 }
 
 export async function getMyProducts(config = {}) {
-  // 1. Fetch User (Handles Server/Client logic internally)
   const userResponse = await authService.getUser(config);
   const producerId = userResponse.data.producer_profile?.id;
 
   if (!producerId) throw new Error("User is not a producer");
 
-  // 2. Prepare headers for the second request
   let headers = config.headers || {};
 
-  // If Server-Side, we must forward cookies manually again
   if (typeof window === "undefined") {
     const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
@@ -153,10 +154,9 @@ export async function getMyProducts(config = {}) {
     };
   }
 
-  // 3. Fetch Producer Sounds
   const response = await apiClient.get(`/api/producers/${producerId}/sounds`, {
     ...config,
-    headers, // Attach the server headers if needed
+    headers,
   });
   return response.data.data;
 }
@@ -216,7 +216,7 @@ export async function createReview(id, reviewData) {
         Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
       },
       withCredentials: true,
-    }
+    },
   );
 
   return response.data;
@@ -230,4 +230,9 @@ export async function getTrendingTags() {
 export async function getPopularProducts() {
   const response = await apiClient.get("/api/products/popular");
   return response.data.data;
+}
+
+export async function getRelatedSounds(slug) {
+  const response = await apiClient.get(`/api/products/${slug}/related`);
+  return Array.isArray(response.data.data) ? response.data.data : [];
 }

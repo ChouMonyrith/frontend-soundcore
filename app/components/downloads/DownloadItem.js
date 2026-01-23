@@ -31,7 +31,7 @@ export function DownloadItem({ item }) {
       const safeName = item.product.name
         .replace(/[^a-z0-9]/gi, "_")
         .toLowerCase();
-      const filename = `${safeName}.${metadata.format || "wav"}`; // Default extension or derive from mime
+      const filename = `${safeName}.${metadata.format || "wav"}`;
 
       // Check for File System Access API support
       if (window.showSaveFilePicker) {
@@ -70,7 +70,6 @@ export function DownloadItem({ item }) {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Download failed:", error);
-      // Optional: Add toast notification here
     } finally {
       setIsDownloading(false);
     }

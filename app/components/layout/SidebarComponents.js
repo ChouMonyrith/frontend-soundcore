@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { ShareButton } from "./ShareButton";
+import Image from "next/image";
 
 export function PricingCard({ sound }) {
   const { addToCart } = useCart();
@@ -194,31 +195,40 @@ export function ArtistProfile({ artist, avatar }) {
 }
 
 export function RelatedSounds({ sounds }) {
+  console.log("sounds", sounds);
   if (!sounds) return null;
   return (
     <div>
       <h3 className="text-white font-semibold mb-4 pl-1">Similar Sounds</h3>
       <div className="space-y-3">
         {sounds.map((sound) => (
-          <div
+          <Link
             key={sound.id}
+            href={`/sounds/${sound.slug}`}
             className="group flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5"
           >
-            <div
+            <Image
+              src={sound.image_path}
+              alt={sound.name}
+              width={50}
+              height={50}
               className={`w-12 h-12 rounded-lg ${
-                sound.image || "bg-neutral-800"
+                sound.image_path || "bg-neutral-800"
               } flex items-center justify-center shrink-0`}
-            >
-              <Play className="w-4 h-4 text-white fill-current opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+              unoptimized
+            />
             <div className="flex-1 min-w-0">
               <div className="text-white text-sm font-medium truncate group-hover:text-violet-400 transition-colors">
                 {sound.name}
               </div>
-              <div className="text-neutral-500 text-xs">{sound.artist}</div>
+              <div className="text-neutral-500 text-xs">
+                {typeof sound.artist === "object"
+                  ? sound.artist.name
+                  : sound.artist}
+              </div>
             </div>
             <div className="text-white text-sm font-bold">${sound.price}</div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

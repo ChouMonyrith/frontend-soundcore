@@ -5,6 +5,8 @@ import Link from "next/link";
 import { FilterSidebar } from "@/app/components/layout/FilterSidebar";
 import { SoundsToolbar } from "@/app/components/sound/SoundsToolbar";
 
+import { Pagination } from "@/app/components/ui/Pagination";
+
 export default async function SoundsPage({ searchParams }) {
   const params = await searchParams;
 
@@ -13,13 +15,13 @@ export default async function SoundsPage({ searchParams }) {
     search: params?.q || "",
     sort: params?.sort || "",
     page: params?.page || 1,
-    limit: params?.limit || 12,
+    limit: params?.limit || 8,
     tags: params?.tags || "",
     min_price: params?.min_price || "",
     max_price: params?.max_price || "",
   };
 
-  const soundsData = await getProducts(filters);
+  const { data: soundsData, meta } = await getProducts(filters);
   const tags = await getTrendingTags();
   const viewMode = params?.view || "grid";
 
@@ -76,6 +78,8 @@ export default async function SoundsPage({ searchParams }) {
             </table>
           </div>
         )}
+
+        <Pagination meta={meta} />
       </main>
     </div>
   );

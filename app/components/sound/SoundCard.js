@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
-import Link from "next/link"; // Import Link
+import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -45,9 +45,9 @@ export function SoundCard({
   const licenseType = "standard";
   const hasPurchased = sound.has_purchased;
 
-  // const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isAddedToFav, setIsAddedToFav] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isOptimized, setIsOptimized] = useState(true);
 
   const audioRef = useRef(null);
 
@@ -136,9 +136,10 @@ export function SoundCard({
             sizes="(max-width: 640px) 100vw,
            (max-width: 1024px) 50vw,
            25vw"
-            loading="lazy"
-            unoptimized
+            loading="eager"
+            unoptimized={!isOptimized}
             className="object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={() => setIsOptimized(false)}
           />
         ) : (
           <div className="absolute inset-0 bg-linear-to-b from-transparent to-neutral-900 z-10 flex items-center justify-center">
