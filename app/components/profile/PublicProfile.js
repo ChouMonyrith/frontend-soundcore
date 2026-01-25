@@ -35,7 +35,11 @@ export default function PublicProfile({
 
           <div className="lg:col-span-2 space-y-8">
             <ProfileStats stats={profile.stats} />
-            <ProfileContent sounds={sounds} />
+            <ProfileContent
+              sounds={sounds}
+              isOwnProfile={isOwnProfile}
+              profileId={profile.id}
+            />
           </div>
         </div>
       </div>

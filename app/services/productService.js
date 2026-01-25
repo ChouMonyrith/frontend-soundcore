@@ -179,6 +179,25 @@ export async function getDownloads() {
   return response.data;
 }
 
+export async function getLikedProducts(params = {}) {
+  const cookieStore = await cookies();
+  const xsrfToken = cookieStore.get("XSRF-TOKEN")?.value;
+
+  if (!xsrfToken) {
+    throw new Error("XSRF-TOKEN cookie not found.");
+  }
+
+  const response = await apiClient.get("/api/me/likes", {
+    params,
+    headers: {
+      "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+      Cookie: cookieStore.toString(),
+      Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    },
+  });
+  return response.data.data;
+}
+
 export async function deleteProduct(id) {
   const cookieStore = await cookies();
   const xsrfToken = cookieStore.get("XSRF-TOKEN")?.value;
@@ -235,4 +254,26 @@ export async function getPopularProducts() {
 export async function getRelatedSounds(slug) {
   const response = await apiClient.get(`/api/products/${slug}/related`);
   return Array.isArray(response.data.data) ? response.data.data : [];
+}
+
+export async function toggleLike(productId) {
+  const cookieStore = await cookies();
+  const xsrfToken = cookieStore.get("XSRF-TOKEN")?.value;
+
+  if (!xsrfToken) {
+    throw new Error("XSRF-TOKEN cookie not found.");
+  }
+
+  const response = await apiClient.post(
+    `/api/products/${productId}/like`,
+    {},
+    {
+      headers: {
+        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+        Cookie: cookieStore.toString(),
+        Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      },
+    },
+  );
+  return response.data;
 }

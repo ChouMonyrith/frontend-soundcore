@@ -2,6 +2,7 @@
 
 import {
   Play,
+  Pause,
   Heart,
   ShoppingCart,
   MoreVertical,
@@ -22,6 +23,7 @@ import {
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { useState, useRef } from "react";
 
 export function SoundRow({
   sound,
@@ -49,6 +51,37 @@ export function SoundRow({
     if (href) {
       router.push(href);
     }
+  };
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  const togglePlay = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      // Create a custom event to pause other players if needed (optional enhancement)
+      // For now just play current
+      const allAudios = document.querySelectorAll("audio");
+      allAudios.forEach((a) => {
+        if (a !== audio) {
+          a.pause();
+        }
+      });
+
+      audio.play().catch((err) => console.error("Playback failed", err));
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
   };
 
   return (
@@ -84,9 +117,22 @@ export function SoundRow({
             )}
 
             {/* Hover Play Overlay */}
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-              <Play className="w-5 h-5 text-white fill-white" />
+            <div
+              onClick={togglePlay}
+              className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              {isPlaying ? (
+                <Pause className="w-5 h-5 text-white fill-white" />
+              ) : (
+                <Play className="w-5 h-5 text-white fill-white" />
+              )}
             </div>
+
+            <audio
+              src={`/api/audio?url=${encodeURIComponent(sound.file_path)}`}
+              ref={audioRef}
+              onEnded={handleEnded}
+            />
           </div>
 
           {/* Text Info */}

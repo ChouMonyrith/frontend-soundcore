@@ -1,5 +1,24 @@
 import apiClient from "../lib/api";
 
+async function getServerHeaders() {
+  if (typeof window === "undefined") {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const xsrfToken = cookieStore.get("XSRF-TOKEN")?.value;
+
+    if (xsrfToken) {
+      return {
+        headers: {
+          "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+          Cookie: cookieStore.toString(),
+          Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+        },
+      };
+    }
+  }
+  return {};
+}
+
 export const profileService = {
   async getProfile(id) {
     const response = await apiClient.get(`/api/profiles/${id}`);
@@ -7,30 +26,19 @@ export const profileService = {
   },
 
   async getMyProfile() {
-    const response = await apiClient.get(`/api/profiles/me`);
+    const config = await getServerHeaders();
+    const response = await apiClient.get(`/api/profiles/me`, config);
     return response.data.data;
   },
 
   async getProfileSounds(id) {
-    const response = await apiClient.get(`/api/profiles/${id}/sounds`);
+    const config = await getServerHeaders();
+    const response = await apiClient.get(`/api/profiles/${id}/sounds`, config);
     return response.data.data;
   },
 
   async toggleFollow(id) {
-    const cookieStore = await cookies();
-    const xsrfToken = cookieStore.get("XSRF-TOKEN")?.value;
-
-    if (!xsrfToken) {
-      throw new Error("XSRF-TOKEN cookie not found.");
-    }
-    const response = await apiClient.post(`/api/profiles/${id}/follow`, {
-      withCredentials: true,
-      headers: {
-        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-        Cookie: cookieStore.toString(),
-        Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-      },
-    });
+    const response = await apiClient.post(`/api/profiles/${id}/follow`, {});
     return response.data.data;
   },
 };

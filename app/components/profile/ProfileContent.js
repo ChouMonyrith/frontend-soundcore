@@ -4,11 +4,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
-import { Grid3x3, List, Layers } from "lucide-react";
-import ProfileSoundCard from "./ProfileSoundCard";
+import { Grid3x3, List, Layers, Heart } from "lucide-react";
 import { SoundCard } from "../sound/SoundCard";
+import { CollectionsTab } from "../collections/CollectionsTab";
+import { LikesTab } from "../likes/LikesTab";
 
-export default function ProfileContent({ sounds }) {
+export default function ProfileContent({ sounds, isOwnProfile, profileId }) {
   return (
     <Tabs defaultValue="sounds" className="w-full">
       <div className="flex items-center justify-between mb-6">
@@ -21,16 +22,18 @@ export default function ProfileContent({ sounds }) {
           </TabsTrigger>
           <TabsTrigger
             value="collections"
-            className="rounded-full px-6 h-10 text-neutral-400 data-[state=active]:bg-neutral-800 data-[state=active]:text-white transition-all"
+            className="rounded-full px-6 h-10 text-neutral-400 data-[state=active]:bg-neutral-800 data-[state=active]:text-white transition-all cursor-pointer"
           >
             Collections
           </TabsTrigger>
-          <TabsTrigger
-            value="liked"
-            className="rounded-full px-6 h-10 text-neutral-400 data-[state=active]:bg-neutral-800 data-[state=active]:text-white transition-all"
-          >
-            Liked
-          </TabsTrigger>
+          {isOwnProfile && (
+            <TabsTrigger
+              value="liked"
+              className="rounded-full px-6 h-10 text-neutral-400 data-[state=active]:bg-neutral-800 data-[state=active]:text-white transition-all cursor-pointer"
+            >
+              Liked
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <div className="hidden md:flex bg-neutral-900/50 rounded-lg p-1 border border-white/5">
@@ -52,14 +55,14 @@ export default function ProfileContent({ sounds }) {
       </TabsContent>
 
       <TabsContent value="collections">
-        <div className="text-center py-20 bg-neutral-900/30 rounded-3xl border border-white/5 border-dashed">
-          <Layers className="w-10 h-10 text-neutral-600 mx-auto mb-4" />
-          <h3 className="text-white font-medium mb-1">No collections public</h3>
-          <p className="text-neutral-500 text-sm">
-            This user hasn&apos;t created any public collections yet.
-          </p>
-        </div>
+        <CollectionsTab isProducer={isOwnProfile} profileId={profileId} />
       </TabsContent>
+
+      {isOwnProfile && (
+        <TabsContent value="liked">
+          <LikesTab />
+        </TabsContent>
+      )}
     </Tabs>
   );
 }

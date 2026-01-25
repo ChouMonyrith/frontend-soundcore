@@ -1,39 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import PublicProfile from "@/app/components/profile/PublicProfile";
 import { profileService } from "@/app/services/profileService";
-import { toast } from "sonner";
 
-export default function ProfilePage() {
-  const [profile, setProfile] = useState(null);
-  const [sounds, setSounds] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default async function ProfilePage() {
+  const profile = await profileService.getMyProfile();
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const profileData = await profileService.getMyProfile();
-        setProfile(profileData);
-
-        if (profileData?.id) {
-          const soundsData = await profileService.getProfileSounds(
-            profileData.id
-          );
-          setSounds(soundsData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-        toast.error("Failed to load profile data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfileData();
-  }, []);
-
-  if (!profile) {
+  if (!profile?.id) {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center text-neutral-400">
         Profile not found
@@ -41,12 +12,7 @@ export default function ProfilePage() {
     );
   }
 
-  return (
-    <PublicProfile
-      profile={profile}
-      sounds={sounds}
-      isOwnProfile={true}
-      onFollow={() => {}}
-    />
-  );
+  const sounds = await profileService.getProfileSounds(profile.id);
+
+  return <PublicProfile profile={profile} sounds={sounds} isOwnProfile />;
 }

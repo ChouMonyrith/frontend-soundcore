@@ -11,6 +11,7 @@ import {
   MoreVertical,
   Download,
   Star,
+  ListPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -27,6 +28,8 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/app/contexts/CartContext";
 import { useState, useRef } from "react";
+import { toggleLike } from "@/app/services/productService";
+import { AddToCollectionDialog } from "../collections/AddToCollectionDialog";
 
 export function SoundCard({
   sound,
@@ -45,7 +48,7 @@ export function SoundCard({
   const licenseType = "standard";
   const hasPurchased = sound.has_purchased;
 
-  const [isAddedToFav, setIsAddedToFav] = useState(false);
+  const [isAddedToFav, setIsAddedToFav] = useState(sound.is_liked || false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOptimized, setIsOptimized] = useState(true);
 
@@ -102,21 +105,22 @@ export function SoundCard({
       return;
     }
 
-    setIsAddedToFav(() => !isAddedToFav);
+    // Optimistic Update
+    const previousState = isAddedToFav;
+    setIsAddedToFav(!previousState);
 
-    // setIsLoading(true);
-    // try {
-    //   const result = await addToCart(sound.id, licenseType, 1);
-    //   if (result.success) {
-    //     setIsAddedToFav(true);
-    //   } else {
-    //     console.log(result.error);
-    //   }
-    // } catch (error) {
-    //   console.error("Error adding to cart:", error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    try {
+      const result = await toggleLike(sound.id);
+      if (result.liked !== !previousState) {
+        // Sync with server response if mismatch (unlikely but safe)
+        setIsAddedToFav(result.liked);
+      }
+      toast.success(result.message);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      setIsAddedToFav(previousState); // Revert
+      toast.error("Failed to update like status");
+    }
   };
 
   return (
@@ -197,18 +201,29 @@ export function SoundCard({
           </div>
 
           <div className="pointer-events-auto" onClick={stopProp}>
-            {!isDashboard ? (
-              <button
-                className="text-neutral-500 hover:text-red-500 transition-colors cursor-pointer"
-                onClick={handleAddToFav}
-              >
-                {isAddedToFav ? (
-                  <Heart className="w-5 h-5 " fill="red" stroke="red" />
-                ) : (
-                  <Heart className="w-5 h-5" />
-                )}
-              </button>
+            {!isDashboard ? ( // Not dashboard -> Show Actions
+              <div className="flex items-center gap-1">
+                <AddToCollectionDialog
+                  sound={sound}
+                  trigger={
+                    <button className="text-neutral-500 hover:text-white transition-colors cursor-pointer p-1">
+                      <ListPlus className="w-5 h-5" />
+                    </button>
+                  }
+                />
+                <button
+                  className="text-neutral-500 hover:text-red-500 transition-colors cursor-pointer p-1"
+                  onClick={handleAddToFav}
+                >
+                  {isAddedToFav ? (
+                    <Heart className="w-5 h-5 " fill="red" stroke="red" />
+                  ) : (
+                    <Heart className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             ) : (
+              // Dashboard -> Show Menu
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="text-neutral-500 hover:text-white transition-colors">
