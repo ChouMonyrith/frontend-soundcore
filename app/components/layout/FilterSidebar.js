@@ -14,6 +14,7 @@ import { use, useState } from "react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import useDebounceCallback from "@/app/hooks/useDebounceCallback";
+import { cn } from "@/lib/utils";
 
 const categories = [
   { name: "All", icon: HashIcon },
@@ -27,7 +28,7 @@ const categories = [
 
 const tags = ["Cinematic", "Trap", "Lo-Fi", "House", "Techno", "Ambient"];
 
-export function FilterSidebar({ trendingTags = tags }) {
+export function FilterSidebar({ trendingTags = tags, className }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -81,9 +82,10 @@ export function FilterSidebar({ trendingTags = tags }) {
   };
 
   return (
-    <aside className="w-72 border-r  border-white/5 bg-neutral-900/20 hidden lg:flex flex-col h-full sticky top-0">
+    <aside
+      className={cn("w-full flex flex-col h-full bg-neutral-900/20", className)}
+    >
       <div className="p-6">
-        {/* Categories */}
         <div className="mb-8">
           <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-4 px-2">
             Categories
@@ -108,7 +110,6 @@ export function FilterSidebar({ trendingTags = tags }) {
           </div>
         </div>
 
-        {/* Popular Tags */}
         <div className="mb-8">
           <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-4 px-2">
             Trending Tags

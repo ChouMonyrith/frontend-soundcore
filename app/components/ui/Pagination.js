@@ -17,7 +17,7 @@ export function Pagination({ meta }) {
   };
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-8">
+    <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
       <Link
         href={createPageUrl(current_page - 1)}
         className={`p-2 rounded-lg border border-white/10 bg-white/5 text-neutral-400 hover:text-white transition-colors ${
