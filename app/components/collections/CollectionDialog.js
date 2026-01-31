@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { createCollection } from "@/app/services/collectionService";
+import { useState, useEffect } from "react";
+import {
+  createCollection,
+  updateCollection,
+} from "@/app/services/collectionService";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -15,13 +18,15 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 
-export function CreateCollectionDialog({
+export function CollectionDialog({
   open,
   onOpenChange,
   onSuccess,
   trigger,
+  mode = "create",
+  initialValues = {},
 }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -29,37 +34,58 @@ export function CreateCollectionDialog({
   const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const handleCreateCollection = async (e) => {
+  useEffect(() => {
+    if (mode === "edit" && initialValues) {
+      setName(initialValues.name || "");
+      setDescription(initialValues.description || "");
+      setIsPublic(
+        initialValues.is_public !== undefined ? initialValues.is_public : true,
+      );
+    } else {
+      setName("");
+      setDescription("");
+      setIsPublic(true);
+      setCoverImage(null);
+    }
+  }, [mode, initialValues, open]);
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Modify this depending on how your API expects data (JSON vs FormData)
-      // Backend expects '1' or '0' for boolean in FormData sometimes, or true/false for JSON
-      // But let's send boolean and let service/axios handle it or cast to string if needed
       const payload = {
         name,
         description,
-        is_public: isPublic ? 1 : 0, // Laravel validation boolean often works best with 1/0 in FormData
-        cover_image: coverImage,
+        is_public: isPublic,
       };
 
-      await createCollection(payload);
-      toast.success("Collection created successfully");
+      if (coverImage) {
+        payload.cover_image = coverImage;
+      }
 
-      // Reset form
-      setName("");
-      setDescription("");
-      setCoverImage(null);
+      if (mode === "create") {
+        await createCollection(payload);
+        toast.success("Collection created successfully");
+      } else {
+        await updateCollection(initialValues.id, payload);
+        toast.success("Collection updated successfully");
+      }
+
+      // Reset form if creating
+      if (mode === "create") {
+        setName("");
+        setDescription("");
+        setCoverImage(null);
+      }
 
       if (onSuccess) onSuccess();
       if (onOpenChange) onOpenChange(false);
     } catch (error) {
-      console.error("Failed to create collection", error);
+      console.error(`Failed to ${mode} collection`, error);
       const errors = error.response?.data?.errors;
       const errorMessage = errors
         ? Object.values(errors).flat().join(", ")
-        : error.response?.data?.message || "Failed to create collection";
+        : error.response?.data?.message || `Failed to ${mode} collection`;
 
       toast.error(errorMessage);
     } finally {
@@ -70,17 +96,24 @@ export function CreateCollectionDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        {trigger || (
-          <Button className="bg-white text-black hover:bg-neutral-200">
-            <Plus className="w-4 h-4 mr-2" /> New Collection
-          </Button>
-        )}
+        {trigger ||
+          (mode === "create" ? (
+            <Button className="bg-white text-black hover:bg-neutral-200">
+              <Plus className="w-4 h-4 mr-2" /> New Collection
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-2">
+              <Edit className="w-4 h-4" /> Edit
+            </Button>
+          ))}
       </DialogTrigger>
       <DialogContent className="bg-neutral-900 border-white/10 text-white sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Collection</DialogTitle>
+          <DialogTitle>
+            {mode === "create" ? "Create Collection" : "Edit Collection"}
+          </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleCreateCollection} className="space-y-4 mt-2">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -111,6 +144,11 @@ export function CreateCollectionDialog({
               onChange={(e) => setCoverImage(e.target.files[0])}
               className="bg-neutral-800 border-white/10 text-white file:text-white"
             />
+            {mode === "edit" && !coverImage && (
+              <p className="text-xs text-neutral-500">
+                Leave empty to keep current image
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2 pt-2">
             <input
@@ -139,7 +177,11 @@ export function CreateCollectionDialog({
               disabled={loading}
               className="bg-violet-600 hover:bg-violet-700 text-white"
             >
-              {loading ? "Creating..." : "Create"}
+              {loading
+                ? "Saving..."
+                : mode === "create"
+                  ? "Create"
+                  : "Save Changes"}
             </Button>
           </div>
         </form>

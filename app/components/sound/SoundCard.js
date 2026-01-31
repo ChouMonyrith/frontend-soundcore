@@ -105,20 +105,18 @@ export function SoundCard({
       return;
     }
 
-    // Optimistic Update
     const previousState = isAddedToFav;
     setIsAddedToFav(!previousState);
 
     try {
       const result = await toggleLike(sound.id);
       if (result.liked !== !previousState) {
-        // Sync with server response if mismatch (unlikely but safe)
         setIsAddedToFav(result.liked);
       }
       toast.success(result.message);
     } catch (error) {
       console.error("Error toggling like:", error);
-      setIsAddedToFav(previousState); // Revert
+      setIsAddedToFav(previousState);
       toast.error("Failed to update like status");
     }
   };

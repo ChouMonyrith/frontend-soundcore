@@ -10,6 +10,7 @@ import {
   Clock,
   Music2,
   Share2,
+  Edit,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -24,8 +25,9 @@ import { PublicHeader } from "@/app/components/layout/PublicHeader";
 import { SoundCard } from "@/app/components/sound/SoundCard";
 import { SoundGridItem } from "@/app/components/sound/SoundGridItem";
 import { SoundRow } from "@/app/components/sound/SoundRow";
+import { CollectionDialog } from "@/app/components/collections/CollectionDialog";
 
-export default function CollectionClient({ collection }) {
+export default function CollectionClient({ collection, currentUser }) {
   const [isLiked, setIsLiked] = useState(false);
   const { cover_image, description, name, products, user, updated_at } =
     collection;
@@ -70,9 +72,27 @@ export default function CollectionClient({ collection }) {
           </div>
 
           <div className="flex-1 flex flex-col justify-end gap-3 pb-2">
-            <span className="uppercase text-xs font-bold tracking-wider text-white/80">
-              Collection
-            </span>
+            <div className="flex justify-between items-start">
+              <span className="uppercase text-xs font-bold tracking-wider text-white/80">
+                Collection
+              </span>
+              {currentUser && currentUser.id === user.id && (
+                <CollectionDialog
+                  mode="edit"
+                  initialValues={collection}
+                  trigger={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                    >
+                      <Edit className="w-4 h-4" /> Edit Collection
+                    </Button>
+                  }
+                  onSuccess={() => window.location.reload()} // Simple reload to refresh data
+                />
+              )}
+            </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tighter shadow-black drop-shadow-lg">
               {name}

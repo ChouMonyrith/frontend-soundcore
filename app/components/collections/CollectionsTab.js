@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getCollections,
   getUserCollections,
 } from "@/app/services/collectionService";
 import { Loader2 } from "lucide-react";
-import { CreateCollectionDialog } from "./CreateCollectionDialog";
+import { CollectionDialog } from "./CollectionDialog";
 import { EmptyCollections } from "./EmptyCollections";
 import { CollectionCard } from "./CollectionCard";
 
@@ -15,11 +15,7 @@ export function CollectionsTab({ isProducer, profileId }) {
   const [loading, setLoading] = useState(true);
   const [newCollectionOpen, setNewCollectionOpen] = useState(false);
 
-  useEffect(() => {
-    fetchCollections();
-  }, [profileId]);
-
-  async function fetchCollections() {
+  const fetchCollections = useCallback(async () => {
     try {
       setLoading(true);
       let data;
@@ -34,7 +30,11 @@ export function CollectionsTab({ isProducer, profileId }) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [isProducer, profileId]);
+
+  useEffect(() => {
+    fetchCollections();
+  }, [profileId, fetchCollections]);
 
   if (loading) {
     return (
@@ -63,10 +63,11 @@ export function CollectionsTab({ isProducer, profileId }) {
 
         {/* Only Producers (Owners) can see the Create Button */}
         {isProducer && (
-          <CreateCollectionDialog
+          <CollectionDialog
             open={newCollectionOpen}
             onOpenChange={setNewCollectionOpen}
             onSuccess={fetchCollections}
+            mode="create"
           />
         )}
       </div>
