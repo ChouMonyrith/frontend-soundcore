@@ -199,16 +199,18 @@ export function SoundCard({
           </div>
 
           <div className="pointer-events-auto" onClick={stopProp}>
-            {!isDashboard ? ( // Not dashboard -> Show Actions
+            {!isDashboard ? (
               <div className="flex items-center gap-1">
-                <AddToCollectionDialog
-                  sound={sound}
-                  trigger={
-                    <button className="text-neutral-500 hover:text-white transition-colors cursor-pointer p-1">
-                      <ListPlus className="w-5 h-5" />
-                    </button>
-                  }
-                />
+                {isOwner && (
+                  <AddToCollectionDialog
+                    sound={sound}
+                    trigger={
+                      <button className="text-neutral-500 hover:text-white transition-colors cursor-pointer p-1">
+                        <ListPlus className="w-5 h-5" />
+                      </button>
+                    }
+                  />
+                )}
                 <button
                   className="text-neutral-500 hover:text-red-500 transition-colors cursor-pointer p-1"
                   onClick={handleAddToFav}
