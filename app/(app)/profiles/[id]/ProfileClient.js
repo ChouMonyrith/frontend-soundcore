@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import PublicProfile from "@/app/components/profile/PublicProfile";
-import { profileService } from "@/app/services/profileService";
+import { toggleFollow } from "@/app/services/profileService";
 import { toast } from "sonner";
 import { useAuth } from "@/app/contexts/AuthContext";
 
@@ -31,10 +31,9 @@ export default function ProfileClient({ initialProfile, initialSounds }) {
     }));
 
     try {
-      await profileService.toggleFollow(profile.id);
+      await toggleFollow(profile.id);
       toast.success(profile.is_following ? "Unfollowed" : "Following!");
     } catch (error) {
-      // Revert if failed
       setProfile(previousState);
       toast.error("Action failed. Please try again.");
     }

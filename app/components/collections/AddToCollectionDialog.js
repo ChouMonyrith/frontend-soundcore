@@ -25,7 +25,6 @@ export function AddToCollectionDialog({ sound, trigger }) {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch collections when dialog opens
   useEffect(() => {
     if (open && user) {
       fetchCollections();
@@ -50,7 +49,6 @@ export function AddToCollectionDialog({ sound, trigger }) {
       await addProductToCollection(collectionId, sound.id);
       toast.success(`Added to collection`);
       setOpen(false);
-      // Optionally refresh collections to show updated state if we keep dialog open
     } catch (error) {
       toast.error("Failed to add to collection");
     }

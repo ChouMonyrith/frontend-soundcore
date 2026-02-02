@@ -1,4 +1,4 @@
-import { profileService } from "@/app/services/profileService";
+import { getProfile, getProfileSounds } from "@/app/services/profileService";
 import ProfileClient from "./ProfileClient";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -8,7 +8,7 @@ import { PublicHeader } from "@/app/components/layout/PublicHeader";
 export async function generateMetadata({ params }) {
   const { id } = await params;
   try {
-    const profile = await profileService.getProfile(id);
+    const profile = await getProfile(id);
     return {
       title: `${profile.name} (@${profile.handle}) | SoundCore`,
       description: profile.bio || `Check out sounds by ${profile.name}.`,
@@ -28,8 +28,8 @@ export default async function ProfilePage({ params }) {
   try {
     // Parallel fetching for speed
     [profileData, soundsData] = await Promise.all([
-      profileService.getProfile(id),
-      profileService.getProfileSounds(id),
+      getProfile(id),
+      getProfileSounds(id),
     ]);
   } catch (error) {
     console.error("ProfilePage Error:", error);

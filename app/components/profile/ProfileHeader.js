@@ -17,23 +17,30 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/app/components/ui/avatar";
+import EditProfileDialog from "./EditProfileDialog";
+import Image from "next/image";
 
 export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
+  console.log("User", user);
+
   return (
     <>
-      {/* Cover Image Section */}
-      <div className="relative h-64 md:h-80 w-full overflow-hidden">
-        <div className={`absolute inset-0 ${user.coverImage}`}></div>
+      <div className="relative h-64 md:h-80 w-full overflow-hidden bg-neutral-900">
+        {user.cover_image ? (
+          <Image
+            src={user.cover_image}
+            alt="Cover"
+            className="absolute inset-0 w-full h-full object-cover"
+            unoptimized
+          />
+        ) : (
+          <div className="absolute inset-0 bg-neutral-800"></div>
+        )}
         <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/20 to-transparent"></div>
 
         {isOwnProfile && (
           <div className="absolute top-4 right-4 md:top-8 md:right-8">
-            <Button
-              variant="outline"
-              className="bg-black/20 backdrop-blur-md border-white/10 text-white hover:bg-black/40 border-none"
-            >
-              <Settings className="w-4 h-4 mr-2" /> Settings
-            </Button>
+            <EditProfileDialog user={user} />
           </div>
         )}
       </div>
@@ -43,14 +50,15 @@ export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
           {/* Avatar */}
           <div className="relative group shrink-0 mx-auto md:mx-0">
             <div className="h-32 w-32 md:h-40 md:w-40 rounded-3xl p-1.5 bg-neutral-950 ring-4 ring-neutral-900/50">
-              <Avatar className="h-full w-full rounded-2xl">
-                <AvatarImage src="/path-to-image.jpg" />
-                <AvatarFallback className="text-4xl font-bold bg-linear-to-br from-violet-500 to-indigo-600 text-white">
-                  {user.avatar}
-                </AvatarFallback>
-              </Avatar>
+              <Image
+                src={user.avatar || "/default-avatar.jpg"}
+                alt="Avatar"
+                fill
+                className="object-cover rounded-3xl"
+                unoptimized
+              />
             </div>
-            <div className="absolute bottom-4 right-[-8px] md:right-[-4px] w-6 h-6 bg-neutral-950 rounded-full flex items-center justify-center">
+            <div className="absolute bottom-4 right-4 md:right-[-4px] w-6 h-6 bg-neutral-950 rounded-full flex items-center justify-center">
               <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-neutral-950"></div>
             </div>
           </div>

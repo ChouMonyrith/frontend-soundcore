@@ -1,8 +1,8 @@
 import PublicProfile from "@/app/components/profile/PublicProfile";
-import { profileService } from "@/app/services/profileService";
+import { getMyProfile, getProfileSounds } from "@/app/services/profileService";
 
 export default async function ProfilePage() {
-  const profile = await profileService.getMyProfile();
+  const profile = await getMyProfile();
 
   if (!profile?.id) {
     return (
@@ -12,7 +12,7 @@ export default async function ProfilePage() {
     );
   }
 
-  const sounds = await profileService.getProfileSounds(profile.id);
+  const sounds = await getProfileSounds(profile.id);
 
   return <PublicProfile profile={profile} sounds={sounds} isOwnProfile />;
 }

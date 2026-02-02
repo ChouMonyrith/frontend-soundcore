@@ -14,7 +14,6 @@ export default function PublicProfile({
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-20 overflow-x-hidden">
-      {/* Background Glow */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px]"></div>
       </div>
