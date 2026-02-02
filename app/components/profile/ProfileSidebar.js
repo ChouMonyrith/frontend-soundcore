@@ -1,15 +1,21 @@
-import { Twitter, Instagram, Globe, Layers } from "lucide-react";
+import { Twitter, Instagram, Globe, Layers, Youtube } from "lucide-react";
 
-export default function ProfileSidebar({ bio }) {
+export default function ProfileSidebar({ bio, social_links }) {
+  console.log("Social Links", social_links);
   return (
     <>
       <div className="bg-neutral-900/30 backdrop-blur-md border border-white/5 rounded-3xl p-6">
         <h3 className="text-white font-semibold mb-3">About</h3>
-        <p className="text-neutral-400 text-sm leading-relaxed mb-6">{bio}</p>
+        <p className="text-neutral-400 text-sm leading-relaxed mb-8">{bio}</p>
+        <div>
+          <h3 className="text-neutral-400 font-medium mb-3">
+            Other Social Links
+          </h3>
+        </div>
         <div className="flex gap-4">
-          <SocialButton icon={Twitter} />
-          <SocialButton icon={Instagram} />
-          <SocialButton icon={Globe} />
+          <SocialButton icon={Twitter} href={social_links.twitter} />
+          <SocialButton icon={Instagram} href={social_links.instagram} />
+          <SocialButton icon={Youtube} href={social_links.youtube} />
         </div>
       </div>
 
@@ -28,10 +34,15 @@ export default function ProfileSidebar({ bio }) {
   );
 }
 
-function SocialButton({ icon: Icon }) {
+function SocialButton({ icon: Icon, href }) {
   return (
-    <button className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 hover:bg-white hover:text-black transition-all">
-      <Icon className="w-4 h-4" />
-    </button>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 hover:bg-white hover:text-black transition-all"
+    >
+      <Icon className="w-6 h-6" />
+    </a>
   );
 }

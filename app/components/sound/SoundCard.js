@@ -1,23 +1,7 @@
 "use client";
 
-import {
-  Play,
-  Pause,
-  Heart,
-  ShoppingCart,
-  Music2,
-  Edit,
-  Trash2,
-  MoreVertical,
-  Download,
-  Star,
-  ListPlus,
-} from "lucide-react";
-import { toast } from "sonner";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,10 +9,26 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { useRouter } from "next/navigation";
 import { useCart } from "@/app/contexts/CartContext";
-import { useState, useRef } from "react";
 import { toggleLike } from "@/app/services/productService";
+import {
+  Download,
+  Edit,
+  Heart,
+  ListPlus,
+  MoreVertical,
+  Music2,
+  Pause,
+  Play,
+  ShoppingCart,
+  Star,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { AddToCollectionDialog } from "../collections/AddToCollectionDialog";
 
 export function SoundCard({
@@ -54,7 +54,6 @@ export function SoundCard({
 
   const audioRef = useRef(null);
 
-  // Helper to prevent the card link from firing when clicking buttons
   const stopProp = (e) => {
     e.stopPropagation();
     e.preventDefault();

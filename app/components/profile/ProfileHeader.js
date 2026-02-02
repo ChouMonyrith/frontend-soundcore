@@ -1,28 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Settings,
-  CheckCircle2,
-  MapPin,
-  Link as LinkIcon,
-  Calendar,
-  UserPlus,
-  MessageCircle,
-  MoreHorizontal,
-} from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/app/components/ui/avatar";
-import EditProfileDialog from "./EditProfileDialog";
+  Calendar,
+  CheckCircle2,
+  Link as LinkIcon,
+  MapPin,
+  MessageCircle,
+  MoreHorizontal,
+  UserPlus,
+} from "lucide-react";
 import Image from "next/image";
+import EditProfileDialog from "./EditProfileDialog";
 
 export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
   console.log("User", user);
-
   return (
     <>
       <div className="relative h-64 md:h-80 w-full overflow-hidden bg-neutral-900">
@@ -30,6 +22,8 @@ export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
           <Image
             src={user.cover_image}
             alt="Cover"
+            width={1920}
+            height={920}
             className="absolute inset-0 w-full h-full object-cover"
             unoptimized
           />
@@ -80,7 +74,7 @@ export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 text-sm text-neutral-400 mb-6">
                   <div className="flex items-center gap-1.5">
                     <BriefcaseIcon className="w-4 h-4 text-violet-400" />
-                    <span>{user.role}</span>
+                    <a>{user.role}</a>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <MapPin className="w-4 h-4 text-neutral-500" />
@@ -88,7 +82,14 @@ export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
                   </div>
                   <div className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
                     <LinkIcon className="w-4 h-4 text-neutral-500" />
-                    <span className="text-violet-400">{user.website}</span>
+                    <a
+                      href={user.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-violet-400"
+                    >
+                      {user.website}
+                    </a>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 text-neutral-500" />
