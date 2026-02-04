@@ -9,23 +9,28 @@ import { useEffect, useState } from "react";
 import {
   dashboardStats,
   dashboardRecentSales,
+  dashboardSalesChart,
 } from "@/app/services/dashboardService";
 import { Spinner } from "@/app/components/ui/spinner";
+import { SalesChart } from "@/app/components/dashboard/SalesChart";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const [stats, setStats] = useState([]);
   const [recentSales, setRecentSales] = useState([]);
+  const [salesChartData, setSalesChartData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsData, salesData] = await Promise.all([
+        const [statsData, salesData, chartData] = await Promise.all([
           dashboardStats(),
           dashboardRecentSales(),
+          dashboardSalesChart(),
         ]);
         setStats(statsData);
         setRecentSales(salesData);
+        setSalesChartData(chartData);
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       }
@@ -72,32 +77,9 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <RecentSale sales={recentSales} />
+            <SalesChart data={salesChartData} />
           </div>
-          {/* Added a side widget for completeness */}
-          <div className="bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-white/5 p-6 h-fit">
-            <h3 className="font-semibold text-white mb-4">Quick Actions</h3>
-            <div className="space-y-3">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-neutral-400 hover:text-white hover:bg-white/5"
-              >
-                <Music className="w-4 h-4 mr-2" /> Manage Sounds
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-neutral-400 hover:text-white hover:bg-white/5"
-              >
-                <Activity className="w-4 h-4 mr-2" /> Analytics
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-neutral-400 hover:text-white hover:bg-white/5"
-              >
-                <User className="w-4 h-4 mr-2" /> Customer List
-              </Button>
-            </div>
-          </div>
+          <RecentSale sales={recentSales} />
         </div>
       </div>
     </div>

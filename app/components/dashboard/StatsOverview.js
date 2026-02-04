@@ -15,7 +15,6 @@ const iconMap = {
 };
 
 export function StatsOverview({ stats = [] }) {
-  // Configuration map based on label
   const config = {
     "Total Revenue": {
       icon: DollarSign,

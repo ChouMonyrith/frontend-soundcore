@@ -8,6 +8,7 @@ import {
   MapPin,
   MessageCircle,
   MoreHorizontal,
+  User2Icon,
   UserPlus,
 } from "lucide-react";
 import Image from "next/image";
@@ -44,13 +45,19 @@ export default function ProfileHeader({ user, onFollow, isOwnProfile }) {
           {/* Avatar */}
           <div className="relative group shrink-0 mx-auto md:mx-0">
             <div className="h-32 w-32 md:h-40 md:w-40 rounded-3xl p-1.5 bg-neutral-950 ring-4 ring-neutral-900/50">
-              <Image
-                src={user.avatar || "/default-avatar.jpg"}
-                alt="Avatar"
-                fill
-                className="object-cover rounded-3xl"
-                unoptimized
-              />
+              {user.avatar ? (
+                <Image
+                  src={user.avatar}
+                  alt="Avatar"
+                  fill
+                  className="object-cover rounded-3xl"
+                  unoptimized
+                />
+              ) : (
+                <div className="h-32 w-32 md:h-40 md:w-40 rounded-3xl p-1.5 bg-neutral-950 ring-4 flex items-center justify-center">
+                  <User2Icon className="w-12 h-12 text-neutral-400" />
+                </div>
+              )}
             </div>
             <div className="absolute bottom-4 right-4 md:right-[-4px] w-6 h-6 bg-neutral-950 rounded-full flex items-center justify-center">
               <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-neutral-950"></div>

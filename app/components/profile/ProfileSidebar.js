@@ -1,7 +1,7 @@
 import { Twitter, Instagram, Globe, Layers, Youtube } from "lucide-react";
 
 export default function ProfileSidebar({ bio, social_links }) {
-  console.log("Social Links", social_links);
+  console.log("social_links", social_links);
   return (
     <>
       <div className="bg-neutral-900/30 backdrop-blur-md border border-white/5 rounded-3xl p-6">
@@ -13,9 +13,15 @@ export default function ProfileSidebar({ bio, social_links }) {
           </h3>
         </div>
         <div className="flex gap-4">
-          <SocialButton icon={Twitter} href={social_links.twitter} />
-          <SocialButton icon={Instagram} href={social_links.instagram} />
-          <SocialButton icon={Youtube} href={social_links.youtube} />
+          {social_links?.twitter && (
+            <SocialButton icon={Twitter} href={social_links.twitter} />
+          )}
+          {social_links?.instagram && (
+            <SocialButton icon={Instagram} href={social_links.instagram} />
+          )}
+          {social_links?.youtube && (
+            <SocialButton icon={Youtube} href={social_links.youtube} />
+          )}
         </div>
       </div>
 

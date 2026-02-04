@@ -9,3 +9,8 @@ export async function dashboardRecentSales() {
   const response = await apiClient.get("/api/dashboard/recent-sales");
   return response.data;
 }
+
+export async function dashboardSalesChart() {
+  const response = await apiClient.get("/api/dashboard/sales-chart");
+  return response.data;
+}
