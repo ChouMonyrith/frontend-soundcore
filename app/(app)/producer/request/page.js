@@ -17,11 +17,11 @@ import producerService from "@/app/services/producerService";
 import { Mic2, Music, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function ProducerRequestPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     display_name: "",
     bio: "",
@@ -110,6 +110,16 @@ export default function ProducerRequestPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/sign-in");
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || !user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col font-sans relative overflow-hidden">

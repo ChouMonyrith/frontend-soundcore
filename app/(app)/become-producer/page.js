@@ -37,16 +37,13 @@ export default function BecomeProducerPage() {
 
     try {
       await producerService.createProducerProfile(formData);
-      // Ideally, we should re-fetch the user to get the updated producer_profile
-      // For now, we manually update the local status or show a success message
       setStatus("pending");
-      // You might want to trigger a user refresh here if your AuthContext supports it
-      window.location.reload(); // Simple way to refresh context for now
+      window.location.reload();
     } catch (err) {
       console.error(err);
       setError(
         err.response?.data?.message ||
-          "An error occurred while submitting your request."
+          "An error occurred while submitting your request.",
       );
     } finally {
       setLoading(false);

@@ -7,7 +7,6 @@ export const authService = {
       const { cookies } = await import("next/headers");
       const cookieStore = await cookies();
 
-      // Forward all cookies (Session + XSRF) to the API
       return apiClient.get("/api/user", {
         ...config,
         headers: {
@@ -25,7 +24,7 @@ export const authService = {
 
       if (!xsrfToken) {
         throw new Error(
-          "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+          "XSRF-TOKEN cookie not found after fetching CSRF cookie.",
         );
       }
 
@@ -50,7 +49,7 @@ export const authService = {
 
     if (!xsrfToken) {
       throw new Error(
-        "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+        "XSRF-TOKEN cookie not found after fetching CSRF cookie.",
       );
     }
 
@@ -64,7 +63,7 @@ export const authService = {
           "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
         },
         withCredentials: true,
-      }
+      },
     );
   },
 
@@ -74,7 +73,7 @@ export const authService = {
 
     if (!xsrfToken) {
       throw new Error(
-        "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+        "XSRF-TOKEN cookie not found after fetching CSRF cookie.",
       );
     }
 
@@ -87,7 +86,7 @@ export const authService = {
           "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
           Accept: "application/json",
         },
-      }
+      },
     );
   },
 
@@ -97,7 +96,7 @@ export const authService = {
 
     if (!xsrfToken) {
       throw new Error(
-        "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+        "XSRF-TOKEN cookie not found after fetching CSRF cookie.",
       );
     }
 
@@ -116,7 +115,7 @@ export const authService = {
           "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
         },
         withCredentials: true,
-      }
+      },
     );
   },
 
@@ -126,7 +125,7 @@ export const authService = {
 
     if (!xsrfToken) {
       throw new Error(
-        "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+        "XSRF-TOKEN cookie not found after fetching CSRF cookie.",
       );
     }
 
@@ -140,7 +139,7 @@ export const authService = {
           "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
         },
         withCredentials: true,
-      }
+      },
     );
   },
 
@@ -150,7 +149,7 @@ export const authService = {
 
     if (!xsrfToken) {
       throw new Error(
-        "XSRF-TOKEN cookie not found after fetching CSRF cookie."
+        "XSRF-TOKEN cookie not found after fetching CSRF cookie.",
       );
     }
 
@@ -169,7 +168,7 @@ export const authService = {
           "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
         },
         withCredentials: true,
-      }
+      },
     );
   },
 
@@ -185,7 +184,7 @@ export const authService = {
           "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
           Accept: "application/json",
         },
-      }
+      },
     );
   },
 };
