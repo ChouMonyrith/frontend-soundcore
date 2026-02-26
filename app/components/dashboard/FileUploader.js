@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Upload, FileAudio, X, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 
 export default function FileUploader({ files, setFiles }) {
   const [dragActive, setDragActive] = useState(false);
+  const inputRef = useRef(null);
+
+  const openFileDialog = () => {
+    inputRef.current?.click();
+  };
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -53,12 +58,12 @@ export default function FileUploader({ files, setFiles }) {
           clearInterval(interval);
           setFiles((prev) =>
             prev.map((f) =>
-              f.id === file.id ? { ...f, status: "success", progress: 100 } : f
-            )
+              f.id === file.id ? { ...f, status: "success", progress: 100 } : f,
+            ),
           );
         } else {
           setFiles((prev) =>
-            prev.map((f) => (f.id === file.id ? { ...f, progress } : f))
+            prev.map((f) => (f.id === file.id ? { ...f, progress } : f)),
           );
         }
       }, 300);
@@ -100,10 +105,12 @@ export default function FileUploader({ files, setFiles }) {
               accept="audio/*"
               onChange={handleFileInput}
               className="hidden"
+              ref={inputRef}
             />
             <Button
               type="button"
               className="bg-white text-black hover:bg-neutral-200 font-semibold"
+              onClick={openFileDialog}
             >
               Browse Files
             </Button>

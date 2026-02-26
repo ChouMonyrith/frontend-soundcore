@@ -21,22 +21,21 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { ShareButton } from "./ShareButton";
 import Image from "next/image";
+import { toggleLike } from "@/app/services/productService";
 
-export function PricingCard({ sound }) {
-  const { addToCart } = useCart();
+export function PricingCard({ sound, metadata }) {
+  const { addToCart, isInCart } = useCart();
   const { user } = useAuth();
   const isOwner = sound.producer_profile_id === user?.id;
   const router = useRouter();
-  const [addedToCart, setAddedToCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(() => isInCart(sound.id));
   const [loading, setLoading] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  // Default to standard license for now
   const licenseType = "standard";
 
   const handleAddToCart = async () => {
     if (!user) {
-      // Redirect to login if not authenticated
       router.push("/sign-in");
       return;
     }
@@ -46,8 +45,7 @@ export function PricingCard({ sound }) {
       const result = await addToCart(sound.id, licenseType, 1);
       if (result.success) {
         setAddedToCart(true);
-        toast.success("Added to cart");
-        setTimeout(() => setAddedToCart(false), 2000);
+        // toast.success("Added to cart");
       } else {
         if (result.error?.response?.status === 409) {
           toast.error("You already own this sound");
@@ -68,6 +66,28 @@ export function PricingCard({ sound }) {
     router.push("/checkout");
   };
 
+  const handleAddToFav = async () => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const previousState = isFavorited;
+    setIsFavorited(!previousState);
+
+    try {
+      const result = await toggleLike(sound.id);
+      if (result.liked !== !previousState) {
+        setIsFavorited(result.liked);
+      }
+      toast.success(result.message);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      setIsFavorited(previousState);
+      toast.error("Failed to update like status");
+    }
+  };
+
   return (
     <div className="bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-3xl p-6 lg:p-8 shadow-2xl shadow-violet-900/10">
       <div className="flex items-end justify-between mb-8">
@@ -79,12 +99,26 @@ export function PricingCard({ sound }) {
           variant="outline"
           className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 mb-2"
         >
-          In Stock
+          Available
         </Badge>
       </div>
 
       <div className="space-y-3 mb-6">
-        {isOwner && !sound.has_purchased ? (
+        {isOwner ? (
+          <Button
+            disabled
+            className="w-full h-12 text-base font-semibold bg-violet-500/10 text-violet-400 border border-violet-500/20 cursor-not-allowed opacity-100"
+          >
+            <Check className="w-5 h-5 mr-2" /> Owned
+          </Button>
+        ) : sound.has_purchased ? (
+          <Button
+            disabled
+            className="w-full h-12 text-base font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 cursor-not-allowed opacity-100"
+          >
+            <Check className="w-5 h-5 mr-2" /> Purchased
+          </Button>
+        ) : (
           <>
             <Button
               size="lg"
@@ -119,19 +153,12 @@ export function PricingCard({ sound }) {
               </Button>
             </Link>
           </>
-        ) : (
-          <Button
-            disabled
-            className="w-full h-12 text-base font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 cursor-not-allowed opacity-100"
-          >
-            {isOwner ? "Owner" : "Purchased"}
-          </Button>
         )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <button
-          onClick={() => setIsFavorited(!isFavorited)}
+          onClick={() => handleAddToFav()}
           className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
             isFavorited
               ? "bg-red-500/10 border-red-500/20 text-red-400"
@@ -149,17 +176,12 @@ export function PricingCard({ sound }) {
       <div className="space-y-3">
         <h4 className="text-white font-medium text-sm">Included Files</h4>
         <div className="space-y-2">
-          {["WAV (24-bit)", "MP3 (320kbps)"].map((fmt) => (
-            <div
-              key={fmt}
-              className="flex items-center justify-between text-xs text-neutral-400 bg-neutral-800/50 p-2 rounded-lg border border-white/5"
-            >
-              <span className="flex items-center gap-2">
-                <FileAudio className="w-3 h-3" /> {fmt}
-              </span>
-              <span>2.4 MB</span>
-            </div>
-          ))}
+          <div className="flex items-center justify-between text-xs text-neutral-400 bg-neutral-800/50 p-2 rounded-lg border border-white/5">
+            <span className="flex items-center gap-2">
+              <FileAudio className="w-3 h-3" /> {metadata.format}
+            </span>
+            <span>{metadata.size}</span>
+          </div>
         </div>
       </div>
     </div>

@@ -24,6 +24,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useState, useRef } from "react";
+import { toggleLike } from "@/app/services/productService";
+import { useCart } from "@/app/contexts/CartContext";
 
 export function SoundRow({
   sound,
@@ -37,9 +39,14 @@ export function SoundRow({
   const router = useRouter();
   const { user } = useAuth();
   const isOwner = sound.producer_profile_id === user?.producer_profile?.id;
+  const licenseType = "standard";
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  const { addToCart, isInCart } = useCart();
+  const [isAddedToFav, setIsAddedToFav] = useState(false);
 
   const handleRowClick = (e) => {
-    // If the click target is interactive (button, link, etc.), don't navigate row
     if (
       e.target.closest("button") ||
       e.target.closest("a") ||
@@ -53,8 +60,10 @@ export function SoundRow({
     }
   };
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null);
+  const stopProp = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
 
   const togglePlay = (e) => {
     e.stopPropagation();
@@ -66,8 +75,6 @@ export function SoundRow({
     if (isPlaying) {
       audio.pause();
     } else {
-      // Create a custom event to pause other players if needed (optional enhancement)
-      // For now just play current
       const allAudios = document.querySelectorAll("audio");
       allAudios.forEach((a) => {
         if (a !== audio) {
@@ -82,6 +89,37 @@ export function SoundRow({
 
   const handleEnded = () => {
     setIsPlaying(false);
+  };
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    await addToCart(sound.id, licenseType, 1);
+  };
+
+  const handleAddToFav = async () => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const previousState = isAddedToFav;
+    setIsAddedToFav(!previousState);
+
+    try {
+      const result = await toggleLike(sound.id);
+      if (result.liked !== !previousState) {
+        setIsAddedToFav(result.liked);
+      }
+      toast.success(result.message);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      setIsAddedToFav(previousState);
+      toast.error("Failed to update like status");
+    }
   };
 
   return (
@@ -231,28 +269,28 @@ export function SoundRow({
             {!isOwner && !sound.has_purchased ? (
               <>
                 <Button
+                  onClick={handleAddToFav}
                   size="icon"
                   variant="ghost"
                   className="h-8 w-8 text-neutral-500 hover:text-red-500 hover:bg-red-500/10"
                 >
-                  <Heart className="w-4 h-4" />
+                  {isAddedToFav ? (
+                    <Heart fill="red" stroke="red" />
+                  ) : (
+                    <Heart className="w-4 h-4" />
+                  )}
                 </Button>
 
                 <Button
                   size="sm"
-                  onClick={async () => {
-                    if (onAddToCart) {
-                      const result = await onAddToCart(sound);
-                      if (result?.error?.response?.status === 409) {
-                        toast.error("You already own this sound");
-                      } else if (result?.success) {
-                        toast.success("Added to cart");
-                      }
-                    }
+                  onClick={(e) => {
+                    stopProp(e);
+                    handleAddToCart();
                   }}
+                  disabled={isInCart(sound.id)}
                   className="h-10 bg-white/5 text-white hover:bg-white/10 cursor-pointer rounded-full text-xs font-semibold"
                 >
-                  <ShoppingCart className="w-3 h-3 mr-2 " /> Buy
+                  {isInCart(sound.id) ? "Added" : "Add"}
                 </Button>
               </>
             ) : (

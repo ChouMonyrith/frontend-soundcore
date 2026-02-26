@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import orderService from "@/app/services/orderService";
+import { getOrder, downloadProduct } from "@/app/services/orderService";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -16,6 +16,7 @@ import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { Separator } from "@/app/components/ui/separator";
 import { PublicHeader } from "@/app/components/layout/PublicHeader";
+import Image from "next/image";
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -25,7 +26,7 @@ export default function OrderDetailPage() {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await orderService.getOrder(id);
+        const response = await getOrder(id);
         setOrder(response.order);
       } catch (error) {
         console.error("Failed to fetch order", error);
@@ -40,7 +41,7 @@ export default function OrderDetailPage() {
 
   const handleDownload = async (productId) => {
     try {
-      const response = await orderService.downloadProduct(productId);
+      const response = await downloadProduct(productId);
       const url = URL.createObjectURL(response.data);
       const link = document.createElement("a");
       link.href = url;
@@ -156,9 +157,6 @@ export default function OrderDetailPage() {
               className="bg-neutral-900/30 border border-white/5 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-neutral-800 rounded-lg flex items-center justify-center border border-white/5">
-                  <span className="text-xs font-bold text-neutral-500"></span>
-                </div>
                 <div>
                   <div className="font-medium text-white text-lg mb-1">
                     {item.product.name}

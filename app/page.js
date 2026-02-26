@@ -1,4 +1,4 @@
-import { categoriesService } from "@/app/services/categoryService";
+import { getCategories } from "@/app/services/categoryService";
 import {
   Activity,
   ArrowRight,
@@ -29,7 +29,7 @@ const iconMap = {
 };
 
 export default async function HomePage() {
-  const categories = await categoriesService.getCategories();
+  const categories = await getCategories();
   const popularSounds = await getPopularProducts();
   const topProducers = await getTopProducers();
 

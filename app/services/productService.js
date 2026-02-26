@@ -1,7 +1,7 @@
 "use server";
 import apiClient from "@/app/lib/api";
-import { authService } from "./authService";
 import { cookies } from "next/headers";
+import { getUser } from "./authService";
 
 export async function uploadProduct(formData) {
   const cookieStore = await cookies();
@@ -137,7 +137,7 @@ export async function updateProduct(id, formData) {
 }
 
 export async function getMyProducts(config = {}) {
-  const userResponse = await authService.getUser(config);
+  const userResponse = await getUser(config);
   const producerId = userResponse.data.producer_profile?.id;
 
   if (!producerId) throw new Error("User is not a producer");

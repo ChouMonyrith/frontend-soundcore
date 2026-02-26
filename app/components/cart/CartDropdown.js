@@ -20,7 +20,7 @@ export default function CartDropdown() {
 
   const subtotal = cart.data.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0
+    0,
   );
   const items = cart.data;
 
@@ -70,10 +70,8 @@ export default function CartDropdown() {
                     key={item.id}
                     className="group flex gap-3 animate-in fade-in slide-in-from-right-4 duration-300"
                   >
-                    {/* Tiny Image */}
                     <div className="w-16 h-16 rounded-lg bg-neutral-800 shrink-0 flex items-center justify-center relative overflow-hidden">
                       {item.product?.image_path ? (
-                        // If we had image path we would use it, for now using conditional placeholder
                         <div className="text-xs text-neutral-500">
                           <Image
                             src={item.product.image_path}
@@ -89,11 +87,14 @@ export default function CartDropdown() {
                       )}
                     </div>
 
-                    {/* Info */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <div>
                         <h5 className="font-medium text-sm text-white truncate">
-                          {item.product?.name || "Unknown Product"}
+                          {item.product
+                            ? item.product.name.length > 20
+                              ? item.product.name.slice(0, 20) + "..."
+                              : item.product.name
+                            : "Unknown Product"}
                         </h5>
                         <p className="text-xs text-neutral-400 truncate">
                           {item.license_type} License
@@ -109,7 +110,7 @@ export default function CartDropdown() {
                         </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="text-neutral-600 hover:text-red-400 transition-colors p-1 mr-2"
+                          className="text-neutral-400 hover:text-red-400 transition-colors p-1 mr-2"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>

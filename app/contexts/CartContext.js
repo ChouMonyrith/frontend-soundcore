@@ -1,15 +1,21 @@
 "use client";
 
 import {
+  addToCartService,
+  clearCartService,
+  getCart,
+  removeFromCartService,
+  updateCartItemService,
+} from "@/app/services/cartService";
+import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
-import cartService from "@/app/services/cartService";
-import { useAuth } from "./AuthContext";
 import { toast } from "sonner";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
@@ -33,7 +39,7 @@ export const CartProvider = ({ children }) => {
 
     setIsLoading(true);
     try {
-      const response = await cartService.getCart();
+      const response = await getCart();
       setCart(response);
       const count = response.data.reduce((acc, item) => acc + item.quantity, 0);
       setItemCount(count);
@@ -50,7 +56,7 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (productId, licenseType, quantity) => {
     try {
-      await cartService.addToCart(productId, licenseType, quantity);
+      await addToCartService(productId, licenseType, quantity);
       await fetchCart();
       toast.success("Item added to cart");
       return { success: true };
@@ -66,7 +72,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = async (id) => {
     try {
-      await cartService.removeFromCart(id);
+      await removeFromCartService(id);
       await fetchCart();
       toast.success("Item removed from cart");
       return { success: true };
@@ -78,7 +84,7 @@ export const CartProvider = ({ children }) => {
 
   const updateCartItem = async (id, data) => {
     try {
-      await cartService.updateCartItem(id, data);
+      await updateCartItemService(id, data);
       await fetchCart();
       toast.success("Item updated in cart");
       return { success: true };
@@ -91,7 +97,7 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = async () => {
     try {
-      await cartService.clearCart();
+      await clearCartService();
       setCart({ data: [], meta: {} });
       setItemCount(0);
       toast.success("Cart cleared");

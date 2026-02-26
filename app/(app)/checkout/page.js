@@ -10,7 +10,7 @@ import {
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
 import { useCart } from "@/app/contexts/CartContext";
-import orderService from "@/app/services/orderService";
+import { createOrder, checkStatus } from "@/app/services/orderService";
 import { ArrowRight, Check, Loader2, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -25,11 +25,12 @@ export default function CheckoutPage() {
   const [polling, setPolling] = useState(false);
   const [timeLeft, setTimeLeft] = useState(3 * 60); // 3 minutes
   const [isExpired, setIsExpired] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
   const router = useRouter();
 
   const total = cart.data.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0
+    0,
   );
 
   useEffect(() => {
@@ -37,9 +38,10 @@ export default function CheckoutPage() {
     if (polling && qrData?.md5 && !isExpired) {
       interval = setInterval(async () => {
         try {
-          const status = await orderService.checkStatus(qrData.md5);
+          const status = await checkStatus(qrData.md5);
           if (status.payment_status === "paid") {
             setPolling(false);
+            setIsPaid(true);
             await refreshCart(); // Clear cart
             router.push(`/orders/${status.order_id}`);
           }
@@ -71,7 +73,7 @@ export default function CheckoutPage() {
     setTimeLeft(3 * 60);
     try {
       if (paymentMethod === "khqr") {
-        const data = await orderService.createOrder("khqr");
+        const data = await createOrder("khqr");
         if (data.qr_payload && data.md5) {
           setQrData(data);
           setPolling(true);
@@ -94,7 +96,7 @@ export default function CheckoutPage() {
     );
   }
 
-  if (cart.data.length === 0 && !qrData) {
+  if (cart.data.length === 0 && !qrData && !isPaid) {
     return (
       <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center text-neutral-400">
         <p className="mb-4">Your cart is empty.</p>

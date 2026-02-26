@@ -22,7 +22,7 @@ export default function SoundDetailClient({
   const metadata = useAudioMetadata(soundData.file_path);
 
   const togglePlay = () => setIsPlaying(!isPlaying);
-  console.log(soundData);
+  // console.log(soundData);
   return (
     <div className="flex-1 h-full overflow-y-auto bg-neutral-950 text-neutral-100 pb-20 font-sans relative">
       {/* Background Ambience */}
@@ -43,7 +43,7 @@ export default function SoundDetailClient({
           <div className="lg:col-span-2 space-y-10">
             <AudioPlayer
               audioUrl={`/api/audio?url=${encodeURIComponent(
-                soundData.file_path
+                soundData.file_path,
               )}`}
               isPlaying={isPlaying}
               onPlayPause={togglePlay}
@@ -59,7 +59,7 @@ export default function SoundDetailClient({
 
           {/* Right Column: Sidebar */}
           <div className="space-y-6 sticky top-24 h-fit">
-            <PricingCard sound={soundData} />
+            <PricingCard sound={soundData} metadata={metadata} />
             <ArtistProfile
               artist={soundData.artist}
               avatar={soundData.artistAvatar}

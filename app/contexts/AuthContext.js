@@ -2,7 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useEffect } from "react";
-import { authService } from "@/app/services/authService";
+import {
+  getUser,
+  loginService,
+  logoutService,
+  registerService,
+  forgotPasswordService,
+  resetPasswordService,
+  verifyEmailService,
+} from "@/app/services/authService";
 import { toast } from "sonner";
 
 const AuthContext = createContext();
@@ -15,7 +23,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await authService.getUser();
+        const response = await getUser();
         setUser(response.data);
       } catch (error) {
         setUser(null);
@@ -30,9 +38,9 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      await authService.login(email, password);
+      await loginService(email, password);
 
-      const response = await authService.getUser();
+      const response = await getUser();
       setUser(response.data);
 
       // Redirect after successful login
@@ -47,7 +55,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await authService.logout();
+      await logoutService();
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -59,7 +67,7 @@ export function AuthProvider({ children }) {
   const register = async (name, email, password, password_confirmation) => {
     setLoading(true);
     try {
-      const response = await authService.register(
+      const response = await registerService(
         name,
         email,
         password,
@@ -81,7 +89,7 @@ export function AuthProvider({ children }) {
   const forgotPassword = async (email) => {
     setLoading(true);
     try {
-      const response = await authService.forgotPassword(email);
+      const response = await forgotPasswordService(email);
 
       if (response.status === 200) {
         return response.data;
@@ -109,7 +117,7 @@ export function AuthProvider({ children }) {
   ) => {
     setLoading(true);
     try {
-      const response = await authService.resetPassword(
+      const response = await resetPasswordService(
         token,
         email,
         password,
@@ -136,7 +144,7 @@ export function AuthProvider({ children }) {
 
   const verifyEmail = async () => {
     try {
-      const res = await authService.verifyEmail();
+      const res = await verifyEmailService();
       return res.data; // Laravel returns { status: "verification-link-sent" }
     } catch (error) {
       console.error("Verify email resend error:", error);

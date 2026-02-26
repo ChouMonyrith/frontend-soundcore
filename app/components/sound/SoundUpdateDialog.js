@@ -9,7 +9,7 @@ import {
 } from "@/app/components/ui/dialog";
 import SoundForm from "@/app/components/sound/SoundForm";
 import { updateProduct } from "@/app/services/productService";
-import { categoriesService } from "@/app/services/categoryService";
+import { getCategories } from "@/app/services/categoryService";
 
 export default function SoundUpdateDialog({
   sound,
@@ -23,7 +23,7 @@ export default function SoundUpdateDialog({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await categoriesService.getCategories();
+        const data = await getCategories();
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

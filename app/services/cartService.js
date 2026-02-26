@@ -1,81 +1,156 @@
-import apiClient, { getCookie, getCsrfCookie } from "@/app/lib/api";
+import apiClient from "@/app/lib/api";
+import { getCsrfHeaders } from "./httpHelpers";
 
-const cartService = {
-  async getCart() {
-    const response = await apiClient.get("/api/carts");
-    return response.data;
-  },
+/**
+ * GET CART
+ */
+export async function getCart() {
+  const response = await apiClient.get("/api/carts", {
+    withCredentials: true,
+  });
 
-  async addToCart(productId, licenseType = "standard", quantity = 1) {
-    await getCsrfCookie();
-    const xsrfToken = getCookie("XSRF-TOKEN");
+  return response.data;
+}
 
-    if (!xsrfToken) {
-      throw new Error("XSRF-TOKEN cookie not found.");
-    }
+/**
+ * ADD TO CART
+ */
+export async function addToCartService(
+  productId,
+  licenseType = "standard",
+  quantity = 1,
+) {
+  const headers = await getCsrfHeaders();
 
-    const response = await apiClient.post(
-      "/api/carts",
-      {
-        product_id: productId,
-        license_type: licenseType,
-        quantity: quantity,
-      },
-      {
-        headers: {
-          "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-        },
-      }
-    );
+  const response = await apiClient.post(
+    "/api/carts",
+    {
+      product_id: productId,
+      license_type: licenseType,
+      quantity,
+    },
+    { headers, withCredentials: true },
+  );
 
-    return response.data;
-  },
+  return response.data;
+}
 
-  async updateCartItem(id, data) {
-    await getCsrfCookie();
-    const xsrfToken = getCookie("XSRF-TOKEN");
+/**
+ * UPDATE CART ITEM
+ */
+export async function updateCartItemService(id, data) {
+  const headers = await getCsrfHeaders();
 
-    if (!xsrfToken) {
-      throw new Error("XSRF-TOKEN cookie not found.");
-    }
+  const response = await apiClient.put(`/api/carts/${id}`, data, {
+    headers,
+    withCredentials: true,
+  });
 
-    const response = await apiClient.put(`/api/carts/${id}`, data, {
-      headers: {
-        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-      },
-    });
-    return response.data;
-  },
+  return response.data;
+}
 
-  async removeFromCart(id) {
-    await getCsrfCookie();
-    const xsrfToken = getCookie("XSRF-TOKEN");
+/**
+ * REMOVE CART ITEM
+ */
+export async function removeFromCartService(id) {
+  const headers = await getCsrfHeaders();
 
-    if (!xsrfToken) {
-      throw new Error("XSRF-TOKEN cookie not found.");
-    }
+  await apiClient.delete(`/api/carts/${id}`, {
+    headers,
+    withCredentials: true,
+  });
+}
 
-    await apiClient.delete(`/api/carts/${id}`, {
-      headers: {
-        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-      },
-    });
-  },
+/**
+ * CLEAR CART
+ */
+export async function clearCartService() {
+  const headers = await getCsrfHeaders();
 
-  async clearCart() {
-    await getCsrfCookie();
-    const xsrfToken = getCookie("XSRF-TOKEN");
+  await apiClient.delete("/api/carts", {
+    headers,
+    withCredentials: true,
+  });
+}
 
-    if (!xsrfToken) {
-      throw new Error("XSRF-TOKEN cookie not found.");
-    }
+// import apiClient, { getCookie, getCsrfCookie } from "@/app/lib/api";
 
-    await apiClient.delete("/api/carts", {
-      headers: {
-        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
-      },
-    });
-  },
-};
+// const cartService = {
+//   async getCart() {
+//     const response = await apiClient.get("/api/carts");
+//     return response.data;
+//   },
 
-export default cartService;
+//   async addToCart(productId, licenseType = "standard", quantity = 1) {
+//     await getCsrfCookie();
+//     const xsrfToken = getCookie("XSRF-TOKEN");
+
+//     if (!xsrfToken) {
+//       throw new Error("XSRF-TOKEN cookie not found.");
+//     }
+
+//     const response = await apiClient.post(
+//       "/api/carts",
+//       {
+//         product_id: productId,
+//         license_type: licenseType,
+//         quantity: quantity,
+//       },
+//       {
+//         headers: {
+//           "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+//         },
+//       }
+//     );
+
+//     return response.data;
+//   },
+
+//   async updateCartItem(id, data) {
+//     await getCsrfCookie();
+//     const xsrfToken = getCookie("XSRF-TOKEN");
+
+//     if (!xsrfToken) {
+//       throw new Error("XSRF-TOKEN cookie not found.");
+//     }
+
+//     const response = await apiClient.put(`/api/carts/${id}`, data, {
+//       headers: {
+//         "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+//       },
+//     });
+//     return response.data;
+//   },
+
+//   async removeFromCart(id) {
+//     await getCsrfCookie();
+//     const xsrfToken = getCookie("XSRF-TOKEN");
+
+//     if (!xsrfToken) {
+//       throw new Error("XSRF-TOKEN cookie not found.");
+//     }
+
+//     await apiClient.delete(`/api/carts/${id}`, {
+//       headers: {
+//         "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+//       },
+//     });
+//   },
+
+//   async clearCart() {
+//     await getCsrfCookie();
+//     const xsrfToken = getCookie("XSRF-TOKEN");
+
+//     if (!xsrfToken) {
+//       throw new Error("XSRF-TOKEN cookie not found.");
+//     }
+
+//     await apiClient.delete("/api/carts", {
+//       headers: {
+//         "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+//       },
+//     });
+//   },
+// };
+
+// export default cartService;

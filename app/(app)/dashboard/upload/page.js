@@ -10,7 +10,7 @@ import {
   FormatInfo,
 } from "@/app/components/dashboard/UploadSidebar";
 import { uploadProduct } from "@/app/services/productService";
-import { categoriesService } from "@/app/services/categoryService";
+import { getCategories } from "@/app/services/categoryService";
 import { useEffect } from "react";
 
 export default function UploadPage() {
@@ -22,7 +22,7 @@ export default function UploadPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await categoriesService.getCategories();
+        const data = await getCategories();
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

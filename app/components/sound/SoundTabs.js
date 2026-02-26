@@ -47,8 +47,8 @@ export default function SoundTabs({ sound, reviews }) {
               {(Array.isArray(sound.tags)
                 ? sound.tags
                 : typeof sound.tags === "string"
-                ? sound.tags.split(",")
-                : [sound.tags]
+                  ? sound.tags.split(",")
+                  : [sound.tags]
               )
                 .filter(Boolean)
                 .map((tag) => (
@@ -119,11 +119,6 @@ export default function SoundTabs({ sound, reviews }) {
               <ReviewForm
                 soundId={sound.id}
                 onReviewSubmitted={(newReview) => {
-                  // Ideally we should update the reviews list here.
-                  // For now let's just reload or let the parent handle it?
-                  // The prop `reviews` comes from parent.
-                  // We might need to refresh the page or update state in parent.
-                  // Let's reload for simplicity or just trigger a callback if we had one.
                   window.location.reload();
                 }}
               />
@@ -207,7 +202,7 @@ function ReviewForm({ soundId, onReviewSubmitted }) {
     } catch (err) {
       console.error(err);
       setError(
-        err.response?.data?.message || err.message || "Failed to submit review"
+        err.response?.data?.message || err.message || "Failed to submit review",
       );
     } finally {
       setIsSubmitting(false);

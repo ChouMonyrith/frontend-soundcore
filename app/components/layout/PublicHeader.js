@@ -17,6 +17,7 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import CartDropdown from "@/app/components/cart/CartDropdown";
+import SearchBar from "./SearchBar";
 
 export function PublicHeader({ cartCount = 0 }) {
   const { user, logout } = useAuth();
@@ -56,15 +57,7 @@ export function PublicHeader({ cartCount = 0 }) {
             <Logo width={100} height={100} />
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full group">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 group-hover:text-violet-400 transition-colors w-4 h-4" />
-              <Input
-                placeholder="Search for sounds, loops, presets..."
-                className="pl-10 w-full bg-neutral-900/50 border-white/10 text-neutral-200 placeholder:text-neutral-500 focus:bg-neutral-900 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-full transition-all"
-              />
-            </div>
-          </div>
+          <SearchBar />
 
           <nav className="hidden md:flex items-center gap-8">
             <Link
