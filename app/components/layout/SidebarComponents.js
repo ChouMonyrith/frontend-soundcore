@@ -2,15 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/app/contexts/CartContext";
-import {
-  ShoppingCart,
-  Check,
-  Heart,
-  Share2,
-  FileAudio,
-  Play,
-  Loader2,
-} from "lucide-react";
+import { ShoppingCart, Check, Heart, FileAudio, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
@@ -21,16 +13,22 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { ShareButton } from "./ShareButton";
 import Image from "next/image";
-import { toggleLike } from "@/app/services/productService";
+import { toggleLike, claimFreeProduct } from "@/app/services/productService";
+
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
 
 export function PricingCard({ sound, metadata }) {
   const { addToCart, isInCart } = useCart();
   const { user } = useAuth();
   const isOwner = sound.producer_profile_id === user?.id;
+  const isFree = Number(sound.price) === 0;
   const router = useRouter();
   const [addedToCart, setAddedToCart] = useState(() => isInCart(sound.id));
   const [loading, setLoading] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  // For free sounds: track if user just claimed this session
+  const [claimed, setClaimed] = useState(false);
 
   const licenseType = "standard";
 
@@ -45,7 +43,6 @@ export function PricingCard({ sound, metadata }) {
       const result = await addToCart(sound.id, licenseType, 1);
       if (result.success) {
         setAddedToCart(true);
-        // toast.success("Added to cart");
       } else {
         if (result.error?.response?.status === 409) {
           toast.error("You already own this sound");
@@ -64,6 +61,29 @@ export function PricingCard({ sound, metadata }) {
   const handleBuyNow = () => {
     handleAddToCart();
     router.push("/checkout");
+  };
+
+  const handleGetFree = async () => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+    setLoading(true);
+    try {
+      await claimFreeProduct(sound.id);
+      setClaimed(true);
+      toast.success("Sound added to your downloads!");
+    } catch (error) {
+      if (error?.response?.status === 409) {
+        // Already claimed — just show download button
+        setClaimed(true);
+      } else {
+        toast.error("Failed to claim sound. Please try again.");
+        console.error(error);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddToFav = async () => {
@@ -88,18 +108,29 @@ export function PricingCard({ sound, metadata }) {
     }
   };
 
+  // A user can download if they: purchased (paid), claimed (free), or just clicked Get for Free
+  const canDownload = sound.has_purchased || claimed;
+
   return (
     <div className="bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-3xl p-6 lg:p-8 shadow-2xl shadow-violet-900/10">
       <div className="flex items-end justify-between mb-8">
         <div>
           <div className="text-neutral-400 text-sm mb-1">Total Price</div>
-          <div className="text-4xl font-bold text-white">${sound.price}</div>
+          {isFree ? (
+            <div className="text-4xl font-bold text-emerald-400">Free</div>
+          ) : (
+            <div className="text-4xl font-bold text-white">${sound.price}</div>
+          )}
         </div>
         <Badge
           variant="outline"
-          className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 mb-2"
+          className={
+            isFree
+              ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/10 mb-2"
+              : "border-emerald-500/30 text-emerald-400 bg-emerald-500/10 mb-2"
+          }
         >
-          Available
+          {isFree ? "Free Download" : "Available"}
         </Badge>
       </div>
 
@@ -111,6 +142,35 @@ export function PricingCard({ sound, metadata }) {
           >
             <Check className="w-5 h-5 mr-2" /> Owned
           </Button>
+        ) : isFree ? (
+          canDownload ? (
+            // Already claimed — show Download button
+            <a
+              href={`${API_BASE}/api/orders/download/${sound.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="w-full h-12 text-base font-semibold bg-emerald-600 hover:bg-emerald-500 text-white">
+                <Download className="w-5 h-5 mr-2" /> Download
+              </Button>
+            </a>
+          ) : (
+            // Not yet claimed
+            <Button
+              size="lg"
+              onClick={handleGetFree}
+              disabled={loading}
+              className="w-full h-12 text-base font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
+            >
+              {loading ? (
+                "Claiming..."
+              ) : (
+                <>
+                  <Download className="w-5 h-5 mr-2" /> Get for Free
+                </>
+              )}
+            </Button>
+          )
         ) : sound.has_purchased ? (
           <Button
             disabled
@@ -131,10 +191,11 @@ export function PricingCard({ sound, metadata }) {
               }`}
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                "Adding..."
               ) : addedToCart ? (
                 <>
-                  <Check className="w-5 h-5 mr-2" /> Added
+                  <Check className="w-5 h-5 mr-2" />
+                  Added
                 </>
               ) : (
                 <>

@@ -1,10 +1,16 @@
 "use client";
 import { useAuth } from "@/app/contexts/AuthContext";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function AuthForm({ mode = "login", token = null }) {
+export default function AuthForm({
+  mode = "login",
+  token = null,
+  resetEmail = null,
+}) {
   const { login, register, forgotPassword, resetPassword } = useAuth();
+  const router = useRouter();
 
   const [form, setForm] = useState({
     name: "",
@@ -16,6 +22,14 @@ export default function AuthForm({ mode = "login", token = null }) {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState("error"); // "error" | "success"
+
+  // Pre-fill email from the reset link query param
+  useEffect(() => {
+    if (mode === "resetPassword" && resetEmail) {
+      setForm((prev) => ({ ...prev, email: resetEmail }));
+    }
+  }, [mode, resetEmail]);
 
   const titles = {
     login: "Welcome Back",
@@ -54,6 +68,7 @@ export default function AuthForm({ mode = "login", token = null }) {
       { name: "email", type: "email", placeholder: "Email Address" },
     ],
     resetPassword: [
+      { name: "email", type: "email", placeholder: "Email Address" },
       { name: "password", type: "password", placeholder: "New Password" },
       {
         name: "password_confirmation",
@@ -82,6 +97,7 @@ export default function AuthForm({ mode = "login", token = null }) {
     setLoading(true);
     setErrors({});
     setMessage(null);
+    setMessageType("error");
 
     try {
       if (mode === "login") {
@@ -92,23 +108,44 @@ export default function AuthForm({ mode = "login", token = null }) {
           form.name,
           form.email,
           form.password,
-          form.password_confirmation
+          form.password_confirmation,
         );
         setMessage(message);
       } else if (mode === "forgotPassword") {
-        const message = await forgotPassword(form.email);
-        setMessage(message);
+        const result = await forgotPassword(form.email);
+        // result is an object like { status: "passwords.sent" } — extract a readable string
+        setMessage(
+          typeof result === "string"
+            ? result
+            : (result?.message ??
+                result?.status ??
+                "Reset link sent! Check your email."),
+        );
+        setMessageType("success");
       } else if (mode === "resetPassword") {
-        const message = await resetPassword(
+        const result = await resetPassword(
+          token,
+          form.email,
           form.password,
           form.password_confirmation,
-          token
         );
-        setMessage(message);
+        setMessage(
+          typeof result === "string"
+            ? result
+            : (result?.message ??
+                result?.status ??
+                "Password reset successfully!"),
+        );
+        setMessageType("success");
+        // Redirect to sign-in after a short delay so user can read the message
+        setTimeout(() => router.push("/sign-in"), 2000);
       }
     } catch (error) {
-      if (error.response?.data?.message)
-        setMessage(error.response.data.message || "Something went wrong");
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong";
+      setMessage(msg);
     } finally {
       setLoading(false);
     }
@@ -167,7 +204,12 @@ export default function AuthForm({ mode = "login", token = null }) {
                   placeholder={field.placeholder}
                   value={form[field.name]}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent"
+                  disabled={mode === "resetPassword" && field.name === "email"}
+                  className={`w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent ${
+                    mode === "resetPassword" && field.name === "email"
+                      ? "opacity-50 cursor-not-allowed bg-gray-800"
+                      : ""
+                  }`}
                 />
                 {errors[field.name] && (
                   <p className="text-red-600 text-sm mt-1">
@@ -189,7 +231,13 @@ export default function AuthForm({ mode = "login", token = null }) {
             )}
 
             {message && (
-              <p className="text-red-600 text-sm bg-red-100 px-3 py-2 rounded-lg">
+              <p
+                className={`text-sm px-3 py-2 rounded-lg ${
+                  messageType === "success"
+                    ? "text-green-700 bg-green-100"
+                    : "text-red-600 bg-red-100"
+                }`}
+              >
                 {message}
               </p>
             )}

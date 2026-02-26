@@ -1,5 +1,4 @@
-// app/forgot-password/page.js
-"use client"; // Mark as Client Component
+"use client";
 
 import AuthForm from "@/app/components/auth/AuthForm";
 

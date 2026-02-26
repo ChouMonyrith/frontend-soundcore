@@ -44,33 +44,34 @@ export async function getUserCollections(profileId) {
 
 export async function createCollection(data) {
   const config = await getServerHeaders();
+  if (!config.headers) config.headers = {};
 
   let payload;
 
-  // Check if we have a file image
-  if (data.cover_image instanceof File) {
+  if (data instanceof FormData) {
+    // Dialog sent us a ready-made FormData — pass it straight through.
+    // Set Content-Type to undefined so Axios auto-sets multipart/form-data
+    // WITH the correct boundary string. Never set it to "multipart/form-data"
+    // manually — that omits the boundary and breaks server parsing.
+    config.headers["Content-Type"] = undefined;
+    payload = data;
+  } else if (data.cover_image instanceof File) {
+    // Legacy: plain object with a File inside — build FormData ourselves
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
       if (data[key] !== null && data[key] !== undefined) {
-        // Convert boolean to 1/0 for safer FormData handling
-        if (typeof data[key] === "boolean") {
-          formData.append(key, data[key] ? "1" : "0");
-        } else {
-          formData.append(key, data[key]);
-        }
+        formData.append(
+          key,
+          typeof data[key] === "boolean" ? (data[key] ? "1" : "0") : data[key],
+        );
       }
     });
+    config.headers["Content-Type"] = undefined;
     payload = formData;
-
-    // START FIX: Force Content-Type to multipart/form-data to override the application/json default in apiClient
-    if (!config.headers) {
-      config.headers = {};
-    }
-    config.headers["Content-Type"] = "multipart/form-data";
-    // END FIX
   } else {
+    // Plain JSON — no file
     const { cover_image, ...rest } = data;
-    payload = { ...rest };
+    payload = rest;
   }
 
   const response = await apiClient.post("/api/collections", payload, config);
@@ -79,52 +80,41 @@ export async function createCollection(data) {
 
 export async function updateCollection(id, data) {
   const config = await getServerHeaders();
-  let payload;
+  if (!config.headers) config.headers = {};
 
-  // Check if we have a file image or need FormData for other reasons
+  const url = `/api/collections/${id}`;
+
+  if (data instanceof FormData) {
+    // Ready-made FormData from dialog (may contain a file)
+    // Add _method=PUT for Laravel method spoofing
+    if (!data.has("_method")) data.append("_method", "PUT");
+    config.headers["Content-Type"] = undefined; // Let Axios set boundary
+    const response = await apiClient.post(url, data, config);
+    return response.data;
+  }
+
   const hasFile = data.cover_image instanceof File;
 
   if (hasFile) {
     const formData = new FormData();
-    formData.append("_method", "PUT"); // Method spoofing for Laravel
-
+    formData.append("_method", "PUT");
     Object.keys(data).forEach((key) => {
       if (data[key] !== null && data[key] !== undefined) {
-        if (typeof data[key] === "boolean") {
-          formData.append(key, data[key] ? "1" : "0");
-        } else {
-          formData.append(key, data[key]);
-        }
+        formData.append(
+          key,
+          typeof data[key] === "boolean" ? (data[key] ? "1" : "0") : data[key],
+        );
       }
     });
-    payload = formData;
-
-    if (!config.headers) {
-      config.headers = {};
-    }
-    config.headers["Content-Type"] = "multipart/form-data";
-  } else {
-    // Standard JSON update if no file
-    const { cover_image, ...rest } = data;
-    // If cover_image is a string (URL), we generally simply don't send it or send it as is,
-    // but typically APIs ignore image URLs on update unless it's a specific "remove" flag.
-    // For now we assume if it's not a File, we just send the text fields.
-    payload = { ...rest };
-  }
-
-  // If using FormData with _method spoofing, we POST to the ID url? No, usually POST to URL with _method.
-  // Actually Laravel standard is POST to /resource/id with _method=PUT for file uploads.
-  // Standard PUT for JSON.
-
-  const url = `/api/collections/${id}`;
-
-  if (hasFile) {
-    const response = await apiClient.post(url, payload, config);
-    return response.data;
-  } else {
-    const response = await apiClient.put(url, payload, config);
+    config.headers["Content-Type"] = undefined;
+    const response = await apiClient.post(url, formData, config);
     return response.data;
   }
+
+  // Plain JSON — no file
+  const { cover_image, ...rest } = data;
+  const response = await apiClient.put(url, rest, config);
+  return response.data;
 }
 
 export async function addProductToCollection(collectionId, productId) {

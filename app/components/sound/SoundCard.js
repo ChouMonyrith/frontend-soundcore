@@ -47,6 +47,7 @@ export function SoundCard({
   const detailUrl = `/sounds/${sound.slug || sound.id}`; // Construct URL
   const licenseType = "standard";
   const hasPurchased = sound.has_purchased;
+  const isFree = Number(sound.price) === 0;
 
   const [isAddedToFav, setIsAddedToFav] = useState(sound.is_liked || false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -176,6 +177,11 @@ export function SoundCard({
               {sound.status || "Active"}
             </Badge>
           )}
+          {isFree && (
+            <Badge className="bg-emerald-500/80 hover:bg-emerald-500 text-white">
+              Free
+            </Badge>
+          )}
           <Badge className="bg-black/40 backdrop-blur-md border-white/10 text-white hover:bg-black/60">
             {sound.category}
           </Badge>
@@ -261,7 +267,11 @@ export function SoundCard({
         {/* Footer Actions */}
         <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between gap-3 pointer-events-auto">
           <div className="flex flex-col gap-1 ">
-            <div className="text-xl font-bold text-white">${sound.price}</div>
+            {isFree ? (
+              <div className="text-xl font-bold text-emerald-400">Free</div>
+            ) : (
+              <div className="text-xl font-bold text-white">${sound.price}</div>
+            )}
 
             <div className="flex items-center gap-1">
               <p className="text-xs text-white/80 flex items-center gap-1">
@@ -286,18 +296,33 @@ export function SoundCard({
 
           {!isDashboard ? (
             !isOwner && !hasPurchased ? (
-              <Button
-                size="sm"
-                onClick={(e) => {
-                  stopProp(e);
-                  handleAddToCart();
-                }}
-                disabled={isInCart(sound.id)}
-                className="bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-transform active:scale-95 ml-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                {isInCart(sound.id) ? "Added" : "Add"}
-              </Button>
+              isFree ? (
+                <Link
+                  href={`/sounds/${sound.slug || sound.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-semibold transition-transform active:scale-95 ml-auto cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 mr-1" />
+                    Get
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={(e) => {
+                    stopProp(e);
+                    handleAddToCart();
+                  }}
+                  disabled={isInCart(sound.id)}
+                  className="bg-white text-black hover:bg-neutral-200 rounded-full font-semibold transition-transform active:scale-95 ml-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  {isInCart(sound.id) ? "Added" : "Add"}
+                </Button>
+              )
             ) : (
               <Button
                 size="sm"

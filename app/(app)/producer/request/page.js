@@ -81,8 +81,8 @@ export default function ProducerRequestPage() {
       const payload = new FormData();
       payload.append("display_name", formData.display_name);
       payload.append("bio", formData.bio);
-      payload.append("location", formData.location);
-      payload.append("website", formData.website);
+      if (formData.location) payload.append("location", formData.location);
+      if (formData.website) payload.append("website", formData.website);
 
       if (formData.avatar_path instanceof File) {
         payload.append("avatar", formData.avatar_path);

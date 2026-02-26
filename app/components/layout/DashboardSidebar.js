@@ -27,8 +27,6 @@ export function DashboardSidebar() {
   const menuItems = [
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { label: "My Sounds", href: "/dashboard/my-sounds", icon: Music2 },
-    { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-    { label: "Earnings", href: "/dashboard/earnings", icon: Wallet },
     { label: "Profile", href: "/dashboard/profile", icon: User },
     ...(isAdmin
       ? [

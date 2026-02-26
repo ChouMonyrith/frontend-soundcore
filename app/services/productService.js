@@ -277,3 +277,25 @@ export async function toggleLike(productId) {
   );
   return response.data;
 }
+
+export async function claimFreeProduct(productId) {
+  const cookieStore = await cookies();
+  const xsrfToken = cookieStore.get("XSRF-TOKEN")?.value;
+
+  if (!xsrfToken) {
+    throw new Error("XSRF-TOKEN cookie not found.");
+  }
+
+  const response = await apiClient.post(
+    `/api/products/${productId}/claim-free`,
+    {},
+    {
+      headers: {
+        "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
+        Cookie: cookieStore.toString(),
+        Referer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      },
+    },
+  );
+  return response.data;
+}

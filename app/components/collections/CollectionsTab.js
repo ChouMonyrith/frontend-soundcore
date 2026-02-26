@@ -5,7 +5,8 @@ import {
   getCollections,
   getUserCollections,
 } from "@/app/services/collectionService";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import { Button } from "@/app/components/ui/button";
 import { CollectionDialog } from "./CollectionDialog";
 import { EmptyCollections } from "./EmptyCollections";
 import { CollectionCard } from "./CollectionCard";
@@ -63,12 +64,20 @@ export function CollectionsTab({ isProducer, profileId }) {
 
         {/* Only Producers (Owners) can see the Create Button */}
         {isProducer && (
-          <CollectionDialog
-            open={newCollectionOpen}
-            onOpenChange={setNewCollectionOpen}
-            onSuccess={fetchCollections}
-            mode="create"
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              className="bg-white text-black hover:bg-neutral-200"
+              onClick={() => setNewCollectionOpen(true)}
+            >
+              <Plus className="w-4 h-4 mr-2" /> New Collection
+            </Button>
+            <CollectionDialog
+              open={newCollectionOpen}
+              onOpenChange={setNewCollectionOpen}
+              onSuccess={fetchCollections}
+              mode="create"
+            />
+          </div>
         )}
       </div>
 

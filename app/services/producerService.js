@@ -25,6 +25,10 @@ export async function requestProducerStatus(data) {
 
   const response = await apiClient.post("/api/producer/request", data, {
     headers: {
+      // Explicitly unset Content-Type so Axios auto-sets multipart/form-data
+      // with the correct boundary for file uploads.
+      // The apiClient default of application/json would break file uploads.
+      "Content-Type": undefined,
       "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
     },
     withCredentials: true,
@@ -48,7 +52,7 @@ export async function approveProducerRequest(id) {
       headers: {
         "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
       },
-    }
+    },
   );
   return response.data;
 }
@@ -64,7 +68,7 @@ export async function rejectProducerRequest(id) {
       headers: {
         "X-XSRF-TOKEN": decodeURIComponent(xsrfToken),
       },
-    }
+    },
   );
   return response.data;
 }
