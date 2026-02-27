@@ -40,9 +40,6 @@ export function CollectionDialog({
 
   const fileInputRef = useRef(null);
 
-  /* ---------------------------
-     Initialize form when dialog opens
-  ---------------------------- */
   useEffect(() => {
     if (!open && isControlled) return;
 
@@ -66,9 +63,6 @@ export function CollectionDialog({
     }
   }, [open]); // only depend on open
 
-  /* ---------------------------
-     Submit handler
-  ---------------------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
 

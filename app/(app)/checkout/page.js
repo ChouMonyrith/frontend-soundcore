@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const { cart, isLoading: cartLoading, refreshCart } = useCart();
@@ -23,7 +24,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("khqr");
   const [qrData, setQrData] = useState(null);
   const [polling, setPolling] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(3 * 60); // 3 minutes
+  const [timeLeft, setTimeLeft] = useState(40); // 3 minutes
   const [isExpired, setIsExpired] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function CheckoutPage() {
           if (status.payment_status === "paid") {
             setPolling(false);
             setIsPaid(true);
+            toast.success("Payment successful");
             await refreshCart(); // Clear cart
             router.push(`/orders/${status.order_id}`);
           }
