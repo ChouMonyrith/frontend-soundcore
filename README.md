@@ -50,7 +50,7 @@ cp .env.example .env.local
 ### 4. Configure your `.env.local`
 
 ```env
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
 ### 5. Start the development server
@@ -59,7 +59,7 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
 npm run dev
 ```
 
-The app will be available at **`http://127.0.0.1:3000`**.
+The app will be available at **`http://localhost:3000`**.
 
 ---
 
