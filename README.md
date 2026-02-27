@@ -31,7 +31,7 @@
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/soundcore-frontend.git
+https://github.com/ChouMonyrith/frontend-soundcore.git
 cd soundcore-frontend
 ```
 
